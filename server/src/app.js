@@ -9,18 +9,21 @@ const router = express.Router();
 export const app = express();
 
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
 
 app.get('/events', (req, res) => {
   getEvents().then(data => {
     res.json(data);
-    console.log(data);
   });
 })
 
 app.get('/events/:id', (req, res) => {
   getEvent(req.params.id).then(data => {
     res.json(data);
-    console.log(data);
   });
 })
 
