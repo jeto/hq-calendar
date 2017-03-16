@@ -10,7 +10,7 @@ class App extends Component {
     this.state = {events: []};
   }
   componentDidMount() {
-    axios.get('http://' + location.hostname + ':3001/events')
+    axios.get('/api/events')
     .then((response) => {
       this.setState({
         events: response.data

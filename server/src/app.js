@@ -15,19 +15,19 @@ app.use((req, res, next) => {
   next();
 })
 
-app.get('/events', (req, res) => {
+app.get('/api/events', (req, res) => {
   getEvents().then(data => {
     res.json(data);
   });
 })
 
-app.get('/events/:id', (req, res) => {
+app.get('/api/events/:id', (req, res) => {
   getEvent(req.params.id).then(data => {
     res.json(data);
   });
 })
 
-app.post('/events', (req, res) => {
+app.post('/api/events', (req, res) => {
   const {name, description, starttime} = req.body;
   
   createEvent(name, description, starttime)
