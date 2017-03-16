@@ -9,8 +9,3 @@ npm-debug.log*
 
 *.DS_Store
 ._*
-
-server.crt
-server.csr
-server.key
-server.key.org
