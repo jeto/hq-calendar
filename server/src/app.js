@@ -1,4 +1,6 @@
 import express from 'express';
+import https from 'https';
+import fs from 'fs';
 import bodyParser from 'body-parser';
 import {db} from './db/database';
 import EventController from './controllers/events';
@@ -7,6 +9,9 @@ import {createEvent, getEvents, getEvent} from './models/models';
 const router = express.Router();
 
 export const app = express();
+const privateKey = fs.readFileSync(process.env.SSLKEY || 'server.key', 'utf-8');
+const certificate = fs.readFileSync(process.env.SSLCRT || 'server.crt', 'utf-8');
+const credentials = {key: privateKey, cert: certificate};
 
 app.use(bodyParser.json());
 app.use((req, res, next) => {
@@ -40,6 +45,6 @@ app.post('/events', (req, res) => {
   });
 })
 
-app.listen(process.env.PORT || 3001, () => {
+https.createServer(credentials, app).listen(3001, () => {
   console.log('App listening on port 3001');
-})
+});
