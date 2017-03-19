@@ -1,6 +1,6 @@
 # HQ-Calendar
 
-[Documentation](https://github.com/jeto/hq-calendar/blob/master/docs/docs.pdf)
+[Documentation](https://github.com/jeto/hq-calendar/blob/master/docs/docs.pdf)  
 [Live here](https://cal.flamero.fi)
 
 
