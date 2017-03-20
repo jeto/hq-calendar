@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import {db} from './db/database';
 import EventController from './controllers/events';
-import {createEvent, getEvents, getEvent} from './models/models';
+import * as models from './models/models';
 
 const router = express.Router();
 
@@ -15,30 +15,11 @@ app.use((req, res, next) => {
   next();
 })
 
-app.get('/api/events', (req, res) => {
-  getEvents().then(data => {
-    res.json(data);
-  });
-})
-
-app.get('/api/events/:id', (req, res) => {
-  getEvent(req.params.id).then(data => {
-    res.json(data);
-  });
-})
-
-app.post('/api/events', (req, res) => {
-  const {name, description, starttime} = req.body;
-  
-  createEvent(name, description, starttime)
-  .then(()=>{
-    res.status(201).send({params:req.body});
-  })
-  .catch(error =>{
-    console.log(error);
-    res.send(error);
-  });
-})
+app.get('/api/events', models.getEvents)
+app.get('/api/events/:id', models.getEvent)
+app.post('/api/events', models.createEvent)
+app.put('/api/events/:id', models.updateEvent)
+app.delete('/api/events/:id', models.deleteEvent)
 
 app.listen(process.env.PORT || 3001, () => {
   console.log('App listening on port 3001');
