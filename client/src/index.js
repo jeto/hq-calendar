@@ -9,6 +9,7 @@ import ReduxPromise from 'redux-promise';
 
 import App from './components/App';
 import Create from './components/Create';
+import Event from './components/Event';
 import reducers from './reducers';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../style/App.css';
@@ -29,6 +30,7 @@ ReactDOM.render(
     <div>
       <Route exact path="/" component={App} />
       <Route exact path="/create" component={Create} />
+      <Route exact path="/event/:id" component={Event} />
     </div>
     </ConnectedRouter>
   </Provider>

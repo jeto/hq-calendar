@@ -16,14 +16,14 @@ class EventList extends Component {
 
   renderList() {
     return this.props.events.map((event) => {
+      const starttime = new Date(event.starttime);
       return (
         <div 
         key={event.id}
         className="Event">
           <h3>{event.name}</h3>
-          <span className="Event-time">{event.starttime}</span>
-          <p className="Event-description">{event.description}</p>
-          <p className="Event-host">{event.host}</p>
+          <p className="Event-time">At: {starttime.toLocaleTimeString('fi-FI')}</p>
+          <p className="Event-time">{starttime.toLocaleDateString('fi-FI')}</p>
         </div>
       );
     });
