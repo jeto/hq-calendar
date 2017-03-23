@@ -14,7 +14,7 @@ export function createEvent(req, res, next) {
 }
 
 export function getEvents(req, res, next) {
-  db.any('SELECT * FROM events ORDER BY id ASC;').
+  db.any('SELECT e.*, row_to_json(u.*) as host FROM events e INNER JOIN users u ON e.host = u.id;').
     then((data) => {
       res.json(data);
     })
@@ -25,7 +25,9 @@ export function getEvents(req, res, next) {
 
 export function getEvent(req, res, next) {
   const eventID = parseInt(req.params.id);
-  db.one('SELECT * FROM events WHERE ID=$1', eventID)
+  db.one(`SELECT e.*, row_to_json(u.*) as host
+          FROM events e INNER JOIN users u
+          ON e.host = u.id WHERE e.ID=$1`, eventID)
     .then((data) => {
       res.json(data);
     }) 

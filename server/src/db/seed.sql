@@ -1,6 +1,6 @@
-INSERT INTO users (name, email, passwordhash)
+INSERT INTO users (username, email, password)
 VALUES ('Foo', 'foo@bar.com', 'tobeimplemented');
-INSERT INTO users (name, email, passwordhash)
+INSERT INTO users (username, email, password)
 VALUES ('John', 'John@doe.com', 'tobeimplemented');
 
 INSERT INTO events (name, description, starttime, endtime, host)
