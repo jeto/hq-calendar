@@ -2,11 +2,11 @@ import {db} from '../db/database';
 
 export function createEvent(req, res, next) {
   req.body.host = parseInt(req.body.host);
-  db.none('INSERT INTO events(name, description, starttime, endtime, host)' +
-          'values(${name}, ${description}, ${starttime}, ${endtime}, ${host})',
+  db.one('INSERT INTO events(name, description, starttime, endtime, host)' +
+          'values(${name}, ${description}, ${starttime}, ${endtime}, ${host}) returning id',
           req.body)
-          .then(() => {
-            res.status(201).end();
+          .then((data) => {
+            res.status(201).json(data.id);
           })
           .catch((err) => {
             return next(err);
@@ -14,7 +14,9 @@ export function createEvent(req, res, next) {
 }
 
 export function getEvents(req, res, next) {
-  db.any('SELECT e.*, row_to_json(u.*) as host FROM events e INNER JOIN users u ON e.host = u.id;').
+  db.any(`SELECT e.*, row_to_json(u.*) as host
+          FROM events e INNER JOIN users u
+          ON e.host = u.id;`).
     then((data) => {
       res.json(data);
     })
