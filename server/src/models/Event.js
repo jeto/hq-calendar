@@ -1,9 +1,10 @@
 import {db} from '../db/database';
 
 export function createEvent(req, res, next) {
+  console.log(req.body)
   req.body.host = parseInt(req.body.host);
   db.one('INSERT INTO events(name, description, starttime, endtime, host)' +
-          'values(${name}, ${description}, ${starttime}, ${endtime}, ${host}) returning id',
+         'values(${name}, ${description}, ${starttime}, ${endtime}, ${host}) returning id',
           req.body)
           .then((data) => {
             res.status(201).json(data.id);
@@ -14,10 +15,8 @@ export function createEvent(req, res, next) {
 }
 
 export function getEvents(req, res, next) {
-  db.any(`SELECT e.*, row_to_json(u.*) as host
-          FROM events e INNER JOIN users u
-          ON e.host = u.id;`).
-    then((data) => {
+  db.any(`SELECT id, name, starttime, endtime from events`)
+    .then((data) => {
       res.json(data);
     })
     .catch((err) => {
@@ -27,13 +26,18 @@ export function getEvents(req, res, next) {
 
 export function getEvent(req, res, next) {
   const eventID = parseInt(req.params.id);
-  db.one(`SELECT e.*, row_to_json(u.*) as host
-          FROM events e INNER JOIN users u
-          ON e.host = u.id WHERE e.ID=$1`, eventID)
+  db.one(`SELECT *, (SELECT row_to_json(u) FROM
+          (select id, username from users where host = users.id) u)
+          as host from events where id=$1`, eventID)
     .then((data) => {
       res.json(data);
+    }, (data) => {
+      if(data.code===0) {
+        res.status(404).json({ error: 'Event not found'});
+      }
     }) 
     .catch((err) => {
+      res.status(400).json({ error: err })
       return next(err);
     });
 }
