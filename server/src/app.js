@@ -2,8 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import routes from './routes';
 import EventController from './controllers/event';
-import * as events from './models/Event';
-import * as users from './models/User';
+import * as events from './models/event';
+import * as users from './models/user';
 
 // const router = express.Router();
 
