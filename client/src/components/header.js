@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 class Header extends Component {
   render() {
     return (
-      <div className="App-header mb-3">
+      <div className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h2>HQ Calendar</h2>
+        
         <ul className="nav justify-content-center">
+        <h2>HQ Calendar</h2>
           <li className="nav-item">
             <Link to="/events" className="nav-link">Events</Link>
           </li>

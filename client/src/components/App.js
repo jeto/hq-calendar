@@ -6,7 +6,7 @@ class App extends Component {
     return (
       <div className="app">
         <Header />
-        <div className="row justify-content-md-center">
+        <div className="container">
           {this.props.children}
         </div>
       </div>

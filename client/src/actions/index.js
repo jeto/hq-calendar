@@ -3,6 +3,7 @@ import axios from 'axios';
 export const FETCH_EVENTS = 'FETCH_EVENTS';
 export const FETCH_EVENT = 'FETCH_EVENT';
 export const CREATE_EVENT = 'CREATE_EVENT';
+export const POST_LOGIN = "POST_LOGIN";
 
 export function fetchEvents() {
   const request = axios.get('/api/events');
@@ -27,6 +28,15 @@ export function createEvent(props) {
 
   return {
     type: CREATE_EVENT,
+    payload: request
+  };
+}
+
+export function postLogin(props) {
+  const request = axios.post(`/login/`, props);
+
+  return {
+    type: POST_LOGIN,
     payload: request
   };
 }

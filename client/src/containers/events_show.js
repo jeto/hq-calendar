@@ -30,7 +30,7 @@ class EventDetails extends Component {
       return <div>Loading</div>
     }
     return (
-      <div className="justify-content-md-center">
+      <div className="row justify-content-md-center">
         {this.renderEvent()}
       </div>
     );

@@ -21,7 +21,7 @@ class EventsNew extends Component {
   render() {
     const { handleSubmit } = this.props;
     return (
-      <div className="col col-md-6">
+      <div className="row justify-content-md-center">
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
         <div className="form-group">
           <label>Host</label>

@@ -1,13 +1,27 @@
 .App-logo {
   position: absolute;
-  left: 0;
-  height: 240px;
+  left: 10%;
+  height: 120px;
 }
 
 .App-header {
   background-color: black;
-  height: 140px;
+  height: 80px;
+  margin-bottom: 50px;
   padding: 20px;
   color: white;
   text-align: center;
+}
+
+.calendar-date-name {
+  margin-top: -0.75rem;
+  margin-left: -0.5rem;
+}
+
+.calendar-date-header {
+  width: 14.3%;
+}
+
+.calendar-date-field {
+  min-height: 2em;
 }
