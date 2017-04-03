@@ -1,4 +1,4 @@
-import * as User from '../models/user';
+import * as User from '../models/User';
 import jwt from 'jwt-simple';
 import config from '../config';
 
