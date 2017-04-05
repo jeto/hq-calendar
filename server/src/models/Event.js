@@ -1,8 +1,8 @@
 import {db} from '../db/database';
+import { userFromToken } from '../controllers/user';
 
 export function createEvent(req, res, next) {
-  console.log(req.body)
-  req.body.host = parseInt(req.body.host);
+  req.body.host = userFromToken(req.get('auth'));
   db.one('INSERT INTO events(name, description, starttime, endtime, host)' +
          'values(${name}, ${description}, ${starttime}, ${endtime}, ${host}) returning id',
           req.body)

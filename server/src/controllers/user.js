@@ -10,6 +10,11 @@ function tokenForUser(user) {
   }, config.secret);
 }
 
+export function userFromToken(token) {
+  const decodedToken = jwt.decode(token, config.secret);
+  return decodedToken.sub;
+}
+
 export const signin = (req, res, next) => {
   res.send({ token: tokenForUser(req.user)});
 }
