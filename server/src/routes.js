@@ -8,8 +8,8 @@ const requireAuth = passport.authenticate('jwt', {session: false})
 const requireSignin = passport.authenticate('local', {session: false})
 
 export default function(app) {
-  app.post('/signup', user.signup)
-  app.post('/signin', requireSignin, user.signin)
+  app.post('/api/signup', user.signup)
+  app.post('/api/signin', requireSignin, user.signin)
 
   app.get('/api/events', requireAuth, events.getEvents)
   app.get('/api/events/:id', requireAuth, events.getEvent)

@@ -78,7 +78,7 @@ class Signup extends Component {
 }
 
 function mapStateToProps(state) {
-  return { errorMessage: state.auth.error };
+  return { errorMessage: state.auth.signupError };
 }
 
 function validate(values) {

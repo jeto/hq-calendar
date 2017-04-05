@@ -9,7 +9,8 @@ import {
   EVENT_ERROR,
   AUTH_USER,
   DEAUTH_USER,
-  AUTH_ERROR
+  AUTH_ERROR,
+  SIGNUP_ERROR
 } from './types';
 
 export function fetchEvents() {
@@ -91,7 +92,7 @@ export function eventError(error) {
 
 export function signinUser({username, password}) {
   return function(dispatch) {
-    axios.post(`/signin`, {username, password})
+    axios.post(`/api/signin`, {username, password})
       .then(response => {
         dispatch({ type: AUTH_USER });
         localStorage.setItem('token', response.data.token);
@@ -105,14 +106,14 @@ export function signinUser({username, password}) {
 
 export function signupUser({username, email, password}) {
   return function(dispatch) {
-    axios.post(`/signup`, {username, email, password})
+    axios.post(`/api/signup`, {username, email, password})
       .then(response => {
         dispatch({type: AUTH_USER });
         localStorage.setItem('token', response.data.token);
         dispatch(push(`/`));
       })
       .catch(err => {
-        dispatch(authError(err.response.data.error));
+        dispatch(signupError(err.response.data.error));
       })
   }
 }
@@ -128,6 +129,12 @@ export function signoutUser() {
 export function authError(error) {
   return {
     type: AUTH_ERROR,
+    payload: error
+  }
+}
+export function signupError(error) {
+  return {
+    type: SIGNUP_ERROR,
     payload: error
   }
 }

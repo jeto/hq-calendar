@@ -5,4 +5,5 @@ export const DELETE_EVENT = 'DELETE_EVENT';
 export const EVENT_ERROR = 'EVENT_ERROR';
 export const AUTH_USER = 'AUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
+export const SIGNUP_ERROR = 'SIGNUP_ERROR';
 export const DEAUTH_USER = 'DEAUTH_USER';
