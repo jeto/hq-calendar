@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import { Field, reduxForm } from 'redux-form'
 import { createEvent } from '../actions/index';
+// import { Card, CardBlock, CardTitle, CardSubtitle, Button } from 'reactstrap';
 
 class EventsNew extends Component {
   static contextTypes = {
@@ -11,11 +11,7 @@ class EventsNew extends Component {
   };
 
   onSubmit(props) {
-    console.log(this.props)
     this.props.createEvent(props)
-      .then((data) => {
-        this.props.dispatch(push(`/events/${data.payload.data}`));
-      })
   };
 
   render() {

@@ -11,6 +11,16 @@ class EventList extends Component {
     this.props.fetchEvents();
   }
 
+  renderAlert() {
+    if(this.props.errorMessage) {
+      return (
+        <div className="alert alert-danger">
+          <strong>Oops!</strong> {this.props.errorMessage}
+        </div>
+      );
+    }
+  }
+
   constructDates() {
     let day = moment();
     var start = moment(day).startOf('month').startOf('isoWeek');
@@ -68,7 +78,7 @@ class EventList extends Component {
       <div className="row justify-content-md-center">
         <div className="col-12 col-md-auto table-responsive">
         <table className="table table-bordered">
-          <thead className="thead-inverse">
+          <thead className="thead-inverse table-sm">
             <tr>
               {dateHeads}
             </tr>
@@ -83,7 +93,9 @@ class EventList extends Component {
   }
 
   renderList() {
-    return this.props.events.all.map((event) => {
+    return this.props.events.all.sort((a, b) => {
+      return +(a.starttime < b.starttime) || +(a.starttime === b.starttime) -1;
+    }).map((event) => {
       return (
         <Link
         key={event.id}
@@ -99,10 +111,12 @@ class EventList extends Component {
       );
     });
   }
+
   render() {
     return (
       <div className="row">
       <div className="col-lg-9 push-lg-3">
+          {this.renderAlert()}
           {this.renderCalendar()}
         </div>
         <div className="col-lg-3 pull-lg-9">
@@ -115,8 +129,9 @@ class EventList extends Component {
   }
 }
 
-function mapStateToProps({events}) {
-  return { events };
+function mapStateToProps(state) {
+  return { events: state.events,
+          errorMessage: state.events.error };
 }
 
 function mapDispatchToProps(dispatch) {

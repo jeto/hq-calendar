@@ -1,52 +1,133 @@
 import axios from 'axios';
+import { push } from 'react-router-redux';
 
-export const FETCH_EVENTS = 'FETCH_EVENTS';
-export const FETCH_EVENT = 'FETCH_EVENT';
-export const CREATE_EVENT = 'CREATE_EVENT';
-export const DELETE_EVENT = 'DELETE_EVENT'
-export const POST_LOGIN = "POST_LOGIN";
+import { 
+  FETCH_EVENTS,
+  FETCH_EVENT,
+  CREATE_EVENT,
+  DELETE_EVENT,
+  EVENT_ERROR,
+  AUTH_USER,
+  DEAUTH_USER,
+  AUTH_ERROR
+} from './types';
 
 export function fetchEvents() {
-  const request = axios.get('/api/events');
-
-  return {
-    type: FETCH_EVENTS,
-    payload: request
-  };
-}
-
-export function fetchEvent(id) {
-  const request = axios.get(`/api/events/${id}`);
-
-  return {
-    type: FETCH_EVENT,
-    payload: request
-  };
-}
-
-export function createEvent(props) {
-  const request = axios.post(`/api/events/`, props);
-
-  return {
-    type: CREATE_EVENT,
-    payload: request
-  };
-}
-
-export function deleteEvent(id) {
-  const request = axios.delete(`/api/events/${id}`);
-
-  return {
-    type: DELETE_EVENT,
-    payload: request
+  return function(dispatch) {
+    axios.get(`/api/events`, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+        dispatch({
+          type: FETCH_EVENTS,
+          payload: response })
+      })
+      .catch(err => {
+        dispatch(eventError(err.response.data))
+      })
   }
 }
 
-export function postLogin(props) {
-  const request = axios.post(`/login/`, props);
+export function fetchEvent(id) {
+  return function(dispatch) {
+    axios.get(`/api/events/${id}`, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+        dispatch({
+          type: FETCH_EVENT,
+          payload: response
+        })
+      })
+      .catch(err => {
+        dispatch(eventError(err.response.data))
+      })
+  }
+}
 
+export function createEvent(props) {
+  return function(dispatch) {
+    axios.post(`/api/events`, props, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+        dispatch({
+          type: CREATE_EVENT,
+          payload: response
+        })
+        dispatch(push(`/events/${response.data}`))
+
+      })
+      .catch(err => {
+        dispatch(eventError(err.response.data))
+      })
+  }
+}
+
+export function deleteEvent(id) {
+  return function(dispatch) {
+    axios.delete(`/api/events/${id}`, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+        dispatch({
+          type: DELETE_EVENT,
+          payload: response
+        })
+        dispatch(push(`/events/`));
+      })
+      .catch(err => {
+        dispatch(eventError(err.response.data))
+      })
+  }
+}
+
+export function eventError(error) {
   return {
-    type: POST_LOGIN,
-    payload: request
-  };
+    type: EVENT_ERROR,
+    payload: error
+  }
+}
+
+export function signinUser({username, password}) {
+  return function(dispatch) {
+    axios.post(`/signin`, {username, password})
+      .then(response => {
+        dispatch({ type: AUTH_USER });
+        localStorage.setItem('token', response.data.token);
+        dispatch(push(`/`));
+      })
+      .catch(err => {
+        dispatch(authError(err.response.data));
+      })
+  }
+}
+
+export function signupUser({username, email, password}) {
+  return function(dispatch) {
+    axios.post(`/signup`, {username, email, password})
+      .then(response => {
+        dispatch({type: AUTH_USER });
+        localStorage.setItem('token', response.data.token);
+        dispatch(push(`/`));
+      })
+      .catch(err => {
+        dispatch(authError(err.response.data));
+      })
+  }
+}
+
+export function signoutUser() {
+  return function(dispatch) {
+    localStorage.removeItem('token');
+    dispatch({ type: DEAUTH_USER });
+    dispatch(push(`/signin`));
+  }
+}
+
+export function authError(error) {
+  return {
+    type: AUTH_ERROR,
+    payload: error
+  }
 }

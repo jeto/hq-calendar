@@ -12,6 +12,7 @@ class Header extends Component {
       isOpen: false
     };
   }
+
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
@@ -33,6 +34,9 @@ class Header extends Component {
             </NavItem>
             <NavItem>
               <NavLink tag={Link} to="/events/new">New event</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={Link} to="/signout">Sign Out</NavLink>
             </NavItem>
           </Nav>
         </Collapse>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchEvent, deleteEvent } from '../actions/index';
-import { push } from 'react-router-redux';
 import { Field, reduxForm } from 'redux-form'
 import moment from 'moment';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
@@ -26,11 +25,8 @@ class EventDetails extends Component {
   }
 
   onDelete() {
-    const id = this.props.location.pathname.split('/')[2]
+    const id = this.props.event.id
     this.props.deleteEvent(id)
-        .then(() => {
-          this.props.dispatch(push(`/events/`));      
-        })
   }
 
   onSubmit(props) {
@@ -45,7 +41,7 @@ class EventDetails extends Component {
   renderDelete(){
     return (
       <div>
-      <Button color="danger" className="float-right mr-3" onClick={this.toggle}>Delete</Button>
+      <Button color="danger" className="float-right mx-3" onClick={this.toggle}>Delete</Button>
       <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
         <ModalHeader toggle={this.toggle}>Delete event</ModalHeader>
         <ModalBody>
@@ -71,6 +67,7 @@ class EventDetails extends Component {
         <div className="card-block">
           <Button color="primary" className="float-right">Join</Button>
           {this.renderDelete()}
+          <Button color="secondary" className="float-right">Edit</Button>
           <h4 className="card-title">{event.name}</h4>
           <p className="card-text">{event.description}</p>
         </div>
