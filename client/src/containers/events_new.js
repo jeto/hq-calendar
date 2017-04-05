@@ -1,44 +1,43 @@
 import _ from 'lodash';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form'
 import { createEvent } from '../actions/index';
 // import { Card, CardBlock, CardTitle, CardSubtitle, Button } from 'reactstrap';
 
 class EventsNew extends Component {
-  static contextTypes = {
-    router: PropTypes.object
-  };
-
   onSubmit(props) {
     this.props.createEvent(props)
   };
+
+  renderField({input,label,type, meta: {touched, error}}) {
+    return (
+      <div className={ (touched && error) ? 'form-group has-danger' : 'form-group'}>
+        <label>{label}</label>
+        <div>
+          <input {...input}
+            className={ (touched && error) ? 'form-control form-control-danger' : 'form-control'}
+            placeholder={label}
+            type={type} />
+          {touched && error && <div className="form-control-feedback">{error}</div>}
+        </div>
+      </div>
+    );
+  }
 
   render() {
     const { handleSubmit } = this.props;
     return (
       <div className="row justify-content-md-center">
+      <div className="col-md-6">
+        <h3>Create new event</h3>
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-        <div className="form-group">
-          <label>Host</label>
-          <Field
-            name="host"
-            component="input"
-            type="number"
-            placeholder="Host"
-            className="form-control"
-            />
-        </div>
-        <div className="form-group">
-          <label>Event name</label>
           <Field
             name="name"
-            component="input"
             type="text"
-            placeholder="Event name"
-            className="form-control"
+            label="Name"
+            component={this.renderField}
             />
-        </div>
         <div className="form-group">
           <label>Description</label>
           <Field
@@ -49,41 +48,48 @@ class EventsNew extends Component {
             className="form-control"
             rows="3" />
         </div>
-        <div className="form-group row">
-          <div className="col-6">
-          <label htmlFor="starttime" className="col-form-label">Starting time</label>
           <Field
-            name="starttime"
-            component="input"
-            className="form-control"
-            type="datetime-local"
-            value="2011-08-19T13:45:00"
-            id="starttime" />
-          </div>
-          <div className="col-6">
-          <label htmlFor="endtime" className="col-form-label">Ending time</label>
+              name="starttime"
+              type="datetime-local"
+              label="Starting time"
+              component={this.renderField}
+              />
           <Field
             name="endtime"
-            component="input"
-            className="form-control"
             type="datetime-local"
-            value="2011-08-19T14:45:00"
-            id="endtime" />
-          </div>
-        </div>
+            label="Ending time"
+            component={this.renderField}
+            />
           <span className="input-group-btn">
             <button type="submit" className="btn btn-secondary">Create</button>
           </span>
         </form>
       </div>
+      </div>
     );
   }
 }
 
-
+function validate(values) {
+  const errors = {};
+  if(!values.name) {
+    errors.name = 'Required'
+  }
+  if(!values.starttime) {
+    errors.starttime = 'Required'
+  }
+  if(!values.endtime) {
+    errors.endtime = 'Required'
+  }
+  if(values.starttime>values.endtime) {
+    errors.endtime = 'Ending time has to be after starting time'
+  }
+  return errors
+}
 
 EventsNew = reduxForm({
-  form: 'EventsNew'
+  form: 'EventsNew',
+  validate
 })(EventsNew);
 
 export default connect(null, {createEvent})(EventsNew);

@@ -19,6 +19,21 @@ class Signin extends Component {
     }
   }
 
+  renderField({input,label,type, meta: {touched, error}}) {
+    return (
+      <div className={ (touched && error) ? 'form-group has-danger' : 'form-group'}>
+        <label>{label}</label>
+        <div>
+          <input {...input}
+            className={ (touched && error) ? 'form-control form-control-danger' : 'form-control'}
+            placeholder={label}
+            type={type} />
+          {touched && error && <div className="form-control-feedback">{error}</div>}
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const { handleSubmit } = this.props;
     return (
@@ -26,26 +41,18 @@ class Signin extends Component {
       <div className="row h-100 justify-content-center">
       <div className="col col-sm-6 col-md-4 my-auto">
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-        <div className="form-group">
-          <label>Username</label>
-          <Field
+        <Field
             name="username"
-            component="input"
             type="text"
-            placeholder="Username"
-            className="form-control"
+            label="Username"
+            component={this.renderField}
             />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <Field
+        <Field
             name="password"
-            component="input"
             type="password"
-            placeholder="Password"
-            className="form-control"
+            label="Password"
+            component={this.renderField}
             />
-        </div>
         {this.renderAlert()}
           <span className="input-group-btn">
             <button type="submit" className="btn btn-primary">Sign in</button>
@@ -65,9 +72,20 @@ function mapStateToProps(state) {
   return { errorMessage: state.auth.error };
 }
 
+function validate(values) {
+  const errors = {};
+  if(!values.username) {
+    errors.username = 'Required'
+  }
+  if(!values.password) {
+    errors.password = 'Required'
+  }
+  return errors
+}
+
 Signin = reduxForm({
   form: 'signin',
-  fields: ['username', 'password']
+  validate
 })(Signin);
 
 export default connect(mapStateToProps, actions)(Signin);

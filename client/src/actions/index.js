@@ -112,7 +112,7 @@ export function signupUser({username, email, password}) {
         dispatch(push(`/`));
       })
       .catch(err => {
-        dispatch(authError(err.response.data));
+        dispatch(authError(err.response.data.error));
       })
   }
 }

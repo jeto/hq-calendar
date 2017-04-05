@@ -18,6 +18,21 @@ class Signup extends Component {
     }
   }
 
+  renderField({input,label,type, meta: {touched, error}}) {
+    return (
+      <div className={ (touched && error) ? 'form-group has-danger' : 'form-group'}>
+        <label>{label}</label>
+        <div>
+          <input {...input}
+            className={ (touched && error) ? 'form-control form-control-danger' : 'form-control'}
+            placeholder={label}
+            type={type} />
+          {touched && error && <div className="form-control-feedback">{error}</div>}
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const { handleSubmit } = this.props;
 
@@ -26,42 +41,31 @@ class Signup extends Component {
       <div className="row h-100 justify-content-center">
       <div className="col col-sm-6 col-md-4 my-auto">
         <form onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
-          <div className="form-group">
-            <label>Username</label>
-            <Field
-              component="input"
-              type="text"
-              name="username"
-              placeholder="Username"
-              className="form-control" />
-          </div>
-          <div className="form-group">
-            <label>Email</label>
-            <Field
-              component="input"
-              type="text"
-              name="email"
-              placeholder="Email"
-              className="form-control" />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <Field
-              component="input"
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="form-control" />
-          </div>
-          <div className="form-group">
-            <label>Confirm password</label>
-            <Field
-              component="input"
-              type="password"
-              name="passwordConfirm"
-              placeholder="Confirm password"
-              className="form-control" />
-          </div>
+          <Field
+            name="username"
+            type="text"
+            label="Username"
+            component={this.renderField}
+            />
+          <Field
+            name="email"
+            type="text"
+            label="Email"
+            component={this.renderField}
+            />
+          <Field
+            name="password"
+            type="password"
+            label="Password"
+            component={this.renderField}
+            />
+          <Field
+            name="passwordConfirm"
+            type="password"
+            label="Confirm Password"
+            component={this.renderField}
+            />
+          {this.renderAlert()}
           <span className="input-group-btn">
             <button type="submit" className="btn btn-primary">Sign Up</button>
           </span>
@@ -77,8 +81,26 @@ function mapStateToProps(state) {
   return { errorMessage: state.auth.error };
 }
 
+function validate(values) {
+  const errors = {};
+  if(!values.username) {
+    errors.username = 'Required'
+  }
+  if(!values.email) {
+    errors.email = 'Required'
+  }
+  if(!values.password) {
+    errors.password = 'Required'
+  }
+  if(values.password !== values.passwordConfirm) {
+    errors.passwordConfirm = "Passwords must match"
+  }
+  return errors
+}
+
 Signup = reduxForm({
-  form: 'signup'
+  form: 'signup',
+  validate
 })(Signup);
 
 export default connect(mapStateToProps, actions)(Signup);
