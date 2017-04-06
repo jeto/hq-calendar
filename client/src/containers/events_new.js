@@ -49,12 +49,14 @@ class EventsNew extends Component {
             className="form-control"
             rows="3" />
         </div>
+        <p>Starting time</p>
           <Field
               name="starttime"
               type="datetime-local"
               label="Starting time"
               component={this.renderField}
               />
+        <p>Ending time</p>
           <Field
             name="endtime"
             type="datetime-local"
