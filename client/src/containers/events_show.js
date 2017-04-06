@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchEvent, deleteEvent } from '../actions/index';
+import { Link } from 'react-router-dom';
+import * as actions from '../actions/index';
 import { Field, reduxForm } from 'redux-form'
 import moment from 'moment';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
@@ -31,11 +32,6 @@ class EventDetails extends Component {
 
   onSubmit(props) {
     props.preventDefault();
-    // console.log(this.props)
-    // this.props.createEvent(props)
-    //   .then((data) => {
-    //     this.props.dispatch(push(`/events/${data.payload.data}`));
-    //   })
   };
 
   renderDelete(){
@@ -67,9 +63,11 @@ class EventDetails extends Component {
         <div className="card-block">
           <Button color="primary" className="float-right">Join</Button>
           {this.renderDelete()}
-          <Button color="secondary" className="float-right">Edit</Button>
+          <Link to={{ pathname: `/events/edit/${this.props.match.params.id}`}} >
+            <Button color="secondary" className="float-right">Edit</Button>
+          </Link>
           <h4 className="card-title">{event.name}</h4>
-          <p className="card-text">{event.description}</p>
+          <pre className="card-text">{event.description}</pre>
         </div>
         <ul className="list-group list-group-flush">
           <li className="list-group-item"><strong>Date:</strong> &nbsp; {moment(starttime).format('DD MMM YYYY')}</li>
@@ -105,6 +103,15 @@ class EventDetails extends Component {
   }
 
   render() {
+    if(this.props.errorMessage) {
+      return (
+        <div className="row justify-content-md-center">
+        <div className="col-md-4 alert alert-danger">
+          <strong>Oops!</strong> {this.props.errorMessage.error}
+        </div>
+        </div>
+      );
+    }
     if(!this.props.event) {
       return (
         <div className="spinner">
@@ -122,13 +129,16 @@ class EventDetails extends Component {
   }
 }
 function mapStateToProps(state) {
-  return { event: state.events.event };
+  return {
+    event: state.events.event,
+    errorMessage: state.events.error
+  };
 }
 EventDetails = reduxForm({
   form: 'EventDetails'
 })(EventDetails);
 
-export default connect(mapStateToProps, {fetchEvent, deleteEvent})(EventDetails);
+export default connect(mapStateToProps, actions)(EventDetails);
 
 
 

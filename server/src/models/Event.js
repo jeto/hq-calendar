@@ -42,7 +42,7 @@ export function getEvent(req, res, next) {
     });
 }
 
-export function updateEvent(req, res, next) {
+export function editEvent(req, res, next) {
   db.none('UPDATE events set name=$1, description=$2, starttime=$3, endtime=$4 WHERE id=$5',
     [req.body.name, req.body.description, req.body.starttime, req.body.endtime, parseInt(req.params.id)])
     .then(() => {

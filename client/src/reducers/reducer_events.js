@@ -4,7 +4,7 @@ import {
   EVENT_ERROR
 } from '../actions/types';
 
-const INITIAL_STATE = { all: [], event: null };
+const INITIAL_STATE = { all: [], event: null, error: {} };
 
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {

@@ -15,7 +15,7 @@ class EventList extends Component {
     if(this.props.errorMessage) {
       return (
         <div className="alert alert-danger">
-          <strong>Oops!</strong> {this.props.errorMessage}
+          <strong>Oops!</strong> {this.props.errorMessage.error}
         </div>
       );
     }
@@ -84,7 +84,7 @@ class EventList extends Component {
             </tr>
           </thead>
           <tbody>
-            {getTrs(this.props.events.all)}
+            {getTrs(this.props.events)}
           </tbody>
         </table>
       </div>
@@ -93,7 +93,7 @@ class EventList extends Component {
   }
 
   renderList() {
-    return this.props.events.all.sort((a, b) => {
+    return this.props.events.sort((a, b) => {
       return +(a.starttime < b.starttime) || +(a.starttime === b.starttime) -1;
     }).map((event) => {
       return (
@@ -104,7 +104,7 @@ class EventList extends Component {
         <div 
         className="d-flex w-100 justify-content-between">
           <h5 className="mb-1">{event.name}</h5>
-          <small className="text-muted">{moment(event.starttime).toNow()}</small>
+          <small className="text-muted">{moment(event.starttime).fromNow()}</small>
         </div>
         <small>{moment(event.starttime).format("dddd, MMMM Do YYYY, HH:mm")}</small>
         </Link>
@@ -130,7 +130,7 @@ class EventList extends Component {
 }
 
 function mapStateToProps(state) {
-  return { events: state.events,
+  return { events: state.events.all,
           errorMessage: state.events.error };
 }
 

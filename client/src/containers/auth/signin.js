@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Field, reduxForm } from 'redux-form';
+import logo from '../../../public/logo.png';
 import * as actions from '../../actions';
 
 class Signin extends Component {
@@ -37,9 +38,12 @@ class Signin extends Component {
   render() {
     const { handleSubmit } = this.props;
     return (
-      <div className="container h-100">
+      <div className="container-fluid px-0 h-100">
+      <div className="login-bar">
+        <img src={logo} className="login-logo" alt="HQ" />
+      </div>
       <div className="row h-100 justify-content-center">
-      <div className="col col-sm-6 col-md-4 my-auto">
+      <div className="col col-sm-6 col-md-4 my-auto px-5">
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
         <Field
             name="username"
@@ -54,13 +58,9 @@ class Signin extends Component {
             component={this.renderField}
             />
         {this.renderAlert()}
-          <span className="input-group-btn">
-            <button type="submit" className="btn btn-primary">Sign in</button>
-          </span>
+            <button type="submit" className="btn btn-block btn-signin">Sign in</button>
         </form>
-        <span className="input-group-btn mt-3">
-          <Link to='/signup' className="btn btn-secondary">Sign up</Link>
-        </span>
+          <Link to='/signup' className="btn btn-block btn-secondary mt-3">Sign up</Link>
       </div>
       </div>
       </div>

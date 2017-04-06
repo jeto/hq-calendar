@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form'
 import { createEvent } from '../actions/index';
+import moment from 'moment';
 // import { Card, CardBlock, CardTitle, CardSubtitle, Button } from 'reactstrap';
 
 class EventsNew extends Component {
@@ -60,10 +61,9 @@ class EventsNew extends Component {
             label="Ending time"
             component={this.renderField}
             />
-          <span className="input-group-btn">
-            <button type="submit" className="btn btn-secondary">Create</button>
-          </span>
+            <button type="submit" className="btn btn-block btn-primary mb-3">Create</button>
         </form>
+        <button onClick={this.props.history.goBack} className="btn btn-block btn-secondary">Cancel</button>
       </div>
       </div>
     );
@@ -87,9 +87,18 @@ function validate(values) {
   return errors
 }
 
+function mapStateToProps(state) {
+  return {
+    initialValues: {
+        starttime: moment().minute(60).format('YYYY-MM-DDTHH:mm'),
+        endtime: moment().minute(60).add(1,'hours').format('YYYY-MM-DDTHH:mm')
+      }
+  };
+}
+
 EventsNew = reduxForm({
   form: 'EventsNew',
   validate
 })(EventsNew);
 
-export default connect(null, {createEvent})(EventsNew);
+export default connect(mapStateToProps, {createEvent})(EventsNew);

@@ -14,6 +14,6 @@ export default function(app) {
   app.get('/api/events', requireAuth, events.getEvents)
   app.get('/api/events/:id', requireAuth, events.getEvent)
   app.post('/api/events', requireAuth, events.createEvent)
-  app.put('/api/events/:id', requireAuth, events.updateEvent)
+  app.put('/api/events/:id', requireAuth, events.editEvent)
   app.delete('/api/events/:id', requireAuth, events.deleteEvent)
 }

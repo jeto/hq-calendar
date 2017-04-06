@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
+import validator from 'validator';
 import * as actions from '../../actions';
 
 class Signup extends Component {
@@ -18,13 +19,25 @@ class Signup extends Component {
     }
   }
 
-  renderField({input,label,type, meta: {touched, error}}) {
+  renderField({input,label,type, meta: {touched, error, warning}}) {
+    let vstyle = ''
+    let dstyle = ''
+    if(touched && error) {
+      vstyle = 'form-control form-control-danger'
+      dstyle = 'form-group has-danger'
+    } else if(touched && warning) {
+      vstyle = 'form-control form-control-success'
+      dstyle = 'form-group has-success'
+    } else {
+      vstyle = 'form-control'
+      dstyle = 'form-group'
+    }
     return (
-      <div className={ (touched && error) ? 'form-group has-danger' : 'form-group'}>
+      <div className={dstyle}>
         <label>{label}</label>
         <div>
           <input {...input}
-            className={ (touched && error) ? 'form-control form-control-danger' : 'form-control'}
+            className={vstyle}
             placeholder={label}
             type={type} />
           {touched && error && <div className="form-control-feedback">{error}</div>}
@@ -88,19 +101,40 @@ function validate(values) {
   }
   if(!values.email) {
     errors.email = 'Required'
+  } else if(!validator.isEmail(values.email)) {
+    errors.email = 'Invalid Email Address'
   }
   if(!values.password) {
     errors.password = 'Required'
+  } else if(validator.isByteLength(values.password, {max:7})) {
+    errors.password = 'Password has to be at least 8 characters';
+    errors.passwordConfirm = true;
   }
   if(values.password !== values.passwordConfirm) {
     errors.passwordConfirm = "Passwords must match"
   }
   return errors
 }
+//Using warnings as success indicators
+function warn(values) {
+  const warnings = {}
+  if(values.passwordConfirm && values.password === values.passwordConfirm) {
+    warnings.password = true;
+    warnings.passwordConfirm = true;
+  }
+  if(values.email && validator.isEmail(values.email)) {
+    warnings.email = true;
+  }
+  if(values.username) {
+    warnings.username = true;
+  }
+  return warnings
+}
 
 Signup = reduxForm({
   form: 'signup',
-  validate
+  validate,
+  warn
 })(Signup);
 
 export default connect(mapStateToProps, actions)(Signup);

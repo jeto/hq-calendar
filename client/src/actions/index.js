@@ -65,6 +65,20 @@ export function createEvent(props) {
   }
 }
 
+export function editEvent(id, props) {
+  return function(dispatch) {
+    axios.put(`/api/events/${id}`, props, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+        dispatch(push(`/events/${id}`))
+      })
+      .catch(err => {
+        dispatch(eventError(err.response.data))
+      })
+  }
+}
+
 export function deleteEvent(id) {
   return function(dispatch) {
     axios.delete(`/api/events/${id}`, {

@@ -1,6 +1,7 @@
 import * as User from '../models/user';
 import jwt from 'jwt-simple';
 import config from '../config';
+import validator from 'validator';
 
 function tokenForUser(user) {
   const timestamp = new Date().getTime();
@@ -26,6 +27,12 @@ export const signup = (req, res, next) => {
 
   if (!username || !email || !password) {
     return res.status(422).send({ error: 'You must provide username, email and password' })
+  }
+  if(!validator.isEmail(email)) {
+    return res.status(422).send({ error: 'Invalid email address'})
+  }
+  if(validator.isByteLength(password,{max:7})) {
+    return res.status(422).send({ error: 'Password has to be at least 8 characters'})
   }
 
   User.checkIfExists(username, email)
