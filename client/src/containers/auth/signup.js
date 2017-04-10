@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
+import { Link } from 'react-router-dom';
 import validator from 'validator';
+import logo from '../../../public/logo.png';
 import * as actions from '../../actions';
 
 class Signup extends Component {
@@ -50,9 +52,12 @@ class Signup extends Component {
     const { handleSubmit } = this.props;
 
     return (
-      <div className="container h-100">
+      <div className="container-fluid px-0 h-100">
+      <div className="login-bar">
+        <img src={logo} className="login-logo" alt="HQ" />
+      </div>
       <div className="row h-100 justify-content-center">
-      <div className="col col-sm-6 col-md-4 my-auto">
+      <div className="col col-sm-6 col-md-4 my-auto px-5">
         <form onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
           <Field
             name="username"
@@ -79,9 +84,8 @@ class Signup extends Component {
             component={this.renderField}
             />
           {this.renderAlert()}
-          <span className="input-group-btn">
-            <button type="submit" className="btn btn-primary">Sign Up</button>
-          </span>
+          <button type="submit" className="btn btn-block btn-primary btn-signin">Sign Up</button>
+          <Link to='/signin' className="btn btn-block btn-secondary mt-3">Back</Link>
         </form>
       </div>
       </div>
@@ -111,7 +115,8 @@ function validate(values) {
     errors.passwordConfirm = true;
   }
   if(values.password !== values.passwordConfirm) {
-    errors.passwordConfirm = "Passwords must match"
+    errors.password = true;
+    errors.passwordConfirm = "Passwords must match";
   }
   return errors
 }
