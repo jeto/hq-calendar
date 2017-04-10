@@ -4,13 +4,17 @@ import { Link } from 'react-router-dom';
 import * as actions from '../actions/index';
 import { Field, reduxForm } from 'redux-form'
 import moment from 'moment';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+  Card, CardBlock, CardTitle,
+  ListGroupItem, ListGroup, InputGroupButton,
+  Button, Modal, ModalHeader, ModalBody, ModalFooter
+} from 'reactstrap'
 
 class EventDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false
+      modal: false,
     };
     this.toggle = this.toggle.bind(this);
   }
@@ -22,7 +26,9 @@ class EventDetails extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchEvent(this.props.match.params.id);
+    const eventID = this.props.match.params.id;
+    this.props.fetchEvent(eventID);
+    this.props.fetchComments(eventID);
   }
 
   onDelete() {
@@ -31,7 +37,8 @@ class EventDetails extends Component {
   }
 
   onSubmit(props) {
-    props.preventDefault();
+    props.id = this.props.match.params.id
+    this.props.createComment(props)
   };
 
   renderDelete(){
@@ -55,63 +62,69 @@ class EventDetails extends Component {
   renderEvent() {
     const event = this.props.event;
     const starttime = new Date(event.starttime);
+    const { handleSubmit } = this.props;
     // const endtime = new Date(event.endtime);
     return (
       <div className="col-lg-6">
-      <div 
-      className="card">
-        <div className="card-block">
+      <Card>
+        <CardBlock>
           <Button color="primary" className="float-right">Join</Button>
           {this.renderDelete()}
           <Link to={{ pathname: `/events/edit/${this.props.match.params.id}`}} >
             <Button color="secondary" className="float-right">Edit</Button>
           </Link>
-          <h4 className="card-title">{event.name}</h4>
-          <pre className="card-text">{event.description}</pre>
-        </div>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item"><strong>Date:</strong> &nbsp; {moment(starttime).format('DD MMM YYYY')}</li>
-          <li className="list-group-item"><strong>Time:</strong> &nbsp; {moment(starttime).format('HH:mm')}</li>
-          <li className="list-group-item"><strong>Host:</strong> &nbsp; {event.host.username}</li>
-        </ul>
-        {this.renderComments()}
-      </div>
+          <CardTitle>{event.name}</CardTitle>
+          <div className="card-text mt-5">
+          {event.description.split("\n").map((line, i) => {
+            return <p key={i}>{line}</p>
+          })}
+          </div>
+        </CardBlock>
+        <ListGroup className="list-group-flush">
+          <ListGroupItem><strong>Date:</strong> &nbsp; {moment(starttime).format('DD MMM YYYY')}</ListGroupItem>
+          <ListGroupItem><strong>Time:</strong> &nbsp; {moment(starttime).format('HH:mm')}</ListGroupItem>
+          <ListGroupItem><strong>Host:</strong> &nbsp; {event.host.username}</ListGroupItem>
+        </ListGroup>
+        <CardBlock>
+          <CardTitle>Comments</CardTitle>
+          <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+          <div className="input-group">
+            <Field
+              name="content"
+              component="input"
+              type="text"
+              className="form-control"
+              />
+            <InputGroupButton>
+              <Button type="submit" color="secondary">Send</Button>
+            </InputGroupButton>
+          </div>
+          </form>
+        </CardBlock>
+        <ListGroup className="list-group-flush">
+          {this.renderComments()}
+        </ListGroup>
+      </Card>
       </div>
     );
   }
 
   renderComments() {
-    return(
-        <div className="card-block">
-          <h5 className="card-title">Comments</h5>
-          <form onSubmit={this.onSubmit}>
-          <div className="input-group">
-            <Field
-              name="comment"
-              component="input"
-              type="text"
-              className="form-control"
-              />
-              <span className="input-group-btn">
-            <button type="submit" className="btn btn-secondary">Send</button>
-          </span>
+    return this.props.comments.sort((a, b) => {
+      return +(a.posted < b.posted) || +(a.posted === b.posted) -1;
+    }).map((comment) => {
+      return(
+        <ListGroupItem key={comment.posted}>
+          <div className="csstooltip"><strong>{comment.username}:&nbsp;</strong>
+            <span className="csstooltiptext">{moment(comment.posted).format('DD.MM.YY HH:mm')}</span>
           </div>
-          
-          </form>
-        </div>
-    )
+          <span>{comment.content}</span>
+        </ListGroupItem>
+      )
+    });
   }
 
   render() {
-    if(this.props.errorMessage) {
-      return (
-        <div className="row justify-content-md-center">
-        <div className="col-md-4 alert alert-danger">
-          <strong>Oops!</strong> {this.props.errorMessage.error}
-        </div>
-        </div>
-      );
-    }
     if(!this.props.event) {
       return (
         <div className="spinner">
@@ -121,6 +134,15 @@ class EventDetails extends Component {
         </div>
     )
     }
+    if(this.props.errorMessage) {
+      return (
+        <div className="row justify-content-md-center">
+        <div className="col-md-4 alert alert-danger">
+          <strong>Oops!</strong> {this.props.errorMessage.error}
+        </div>
+        </div>
+      );
+    }
     return (
       <div className="row justify-content-md-center">
         {this.renderEvent()}
@@ -128,22 +150,25 @@ class EventDetails extends Component {
     );
   }
 }
+
+function validate(values) {
+  const errors = {}
+  if(!values.content) {
+    errors.content = true;
+  }
+  return errors;
+}
+
 function mapStateToProps(state) {
   return {
     event: state.events.event,
+    comments: state.comments,
     errorMessage: state.events.error
   };
 }
 EventDetails = reduxForm({
-  form: 'EventDetails'
+  form: 'EventDetails',
+  validate
 })(EventDetails);
 
 export default connect(mapStateToProps, actions)(EventDetails);
-
-
-
-// function mapDispatchToProps(dispatch) {
-//   return bindActionCreators({ fetchEvent }, dispatch);
-// }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(EventDetails);

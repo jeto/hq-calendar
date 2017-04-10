@@ -4,13 +4,18 @@ import { Link } from 'react-router-dom';
 import * as actions from '../actions/index';
 import { Field, reduxForm } from 'redux-form'
 import moment from 'moment';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+  Card, CardBlock, CardTitle,
+  ListGroupItem, ListGroup,
+  Button, Modal, ModalHeader, ModalBody, ModalFooter
+} from 'reactstrap'
 
 class EditEvent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false
+      modal: false,
+      deletedComments: []
     };
     this.toggle = this.toggle.bind(this);
   }
@@ -22,7 +27,9 @@ class EditEvent extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchEvent(this.props.match.params.id);
+    const eventID = this.props.match.params.id;
+    this.props.fetchEvent(eventID);
+    this.props.fetchComments(eventID);
   }
 
   onDelete() {
@@ -30,8 +37,22 @@ class EditEvent extends Component {
     this.props.deleteEvent(id)
   }
 
+  deleteComment(id) {
+    if(this.state.deletedComments.includes(id)) {
+      let arr = this.state.deletedComments;
+      let i = arr.indexOf(id);
+      arr.splice(i, 1);
+      this.setState({ deletedComments: arr })
+    } else {
+      this.setState({deletedComments: [...this.state.deletedComments, id]})
+    }
+  }
+
   onSubmit(props) {
-    this.props.editEvent(this.props.match.params.id ,props)
+    this.props.editEvent(this.props.match.params.id, props)
+    this.state.deletedComments.forEach(comment => {
+      this.props.deleteComment(comment);
+    })
   };
 
   renderDelete(){
@@ -71,17 +92,16 @@ class EditEvent extends Component {
     const { handleSubmit } = this.props;
     return (
       <div className="col-lg-6">
-      <div 
-      className="card">
+      <Card>
       <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-        <div className="card-block float-right form-inline">
+        <CardBlock className="float-right form-inline">
           <Link to={{ pathname: `/events/${this.props.match.params.id}`}} >
             <Button color="secondary">Discard Changes</Button>
           </Link>
           {this.renderDelete()}
           <Button type="submit" color="primary">Save</Button>
-        </div>
-        <div className="card-block">
+        </CardBlock>
+        <CardBlock>
             <Field
             name="name"
             type="text"
@@ -112,34 +132,46 @@ class EditEvent extends Component {
             type="datetime-local"
             className="form-control"
             format={(value) => moment(value).format('YYYY-MM-DDTHH:mm')} />
-        </div>
+        </CardBlock>
         </form>
-        {this.renderComments()}
-      </div>
+        <CardBlock>
+          <CardTitle>
+            Comments
+          </CardTitle>
+        </CardBlock>
+        <ListGroup className="list-group-flush">
+          {this.renderComments()}
+        </ListGroup>
+      </Card>
       </div>
     );
   }
 
   renderComments() {
-    return(
-        <div className="card-block">
-          <h5 className="card-title">Comments</h5>
-          <form onSubmit={this.onSubmit}>
-          <div className="input-group">
-            <Field
-              name="comment"
-              component="input"
-              type="text"
-              className="form-control"
-              />
-              <span className="input-group-btn">
-            <button type="submit" className="btn btn-secondary">Send</button>
-          </span>
+    return this.props.comments.sort((a, b) => {
+      return +(a.posted < b.posted) || +(a.posted === b.posted) -1;
+    }).map((comment) => {
+      return(
+        <ListGroupItem
+          color={this.state.deletedComments.includes(comment.id) ? 'danger' : ''}
+          className="justify-content-between"
+          key={comment.posted}>
+          <div>
+            <div className="csstooltip"><strong>{comment.username}:&nbsp;</strong>
+              <span className="csstooltiptext">{moment(comment.posted).format('DD.MM.YY HH:mm')}</span>
+            </div>
+            <span>{comment.content}</span>
           </div>
-          
-          </form>
-        </div>
-    )
+          <Button
+            color={this.state.deletedComments.includes(comment.id) ? 'secondary' : 'danger'}
+            size="sm"
+            className="float-right"
+            onClick={()=>this.deleteComment(comment.id)}>
+            {this.state.deletedComments.includes(comment.id) ? 'Cancel' : 'Delete'}
+            </Button>
+        </ListGroupItem>
+      )
+    });
   }
 
   render() {
@@ -180,6 +212,7 @@ function validate(values) {
 function mapStateToProps(state) {
   return { 
     event: state.events.event,
+    comments: state.comments,
     initialValues: state.events.event
   };
 }

@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form'
 import { createEvent } from '../actions/index';
 import moment from 'moment';
-// import { Card, CardBlock, CardTitle, CardSubtitle, Button } from 'reactstrap';
+import { Card, CardBlock, CardTitle, Button } from 'reactstrap';
 
 class EventsNew extends Component {
   onSubmit(props) {
-    this.props.createEvent(props)
+    this.props.createEvent(props);
   };
 
   renderField({input,label,type, meta: {touched, error}}) {
@@ -30,8 +30,10 @@ class EventsNew extends Component {
     const { handleSubmit } = this.props;
     return (
       <div className="row justify-content-md-center">
-      <div className="col-md-6">
-        <h3>Create new event</h3>
+      <div className="col-lg-6">
+      <Card>
+        <CardBlock>
+        <CardTitle>Create new event</CardTitle>
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
           <Field
             name="name"
@@ -63,9 +65,11 @@ class EventsNew extends Component {
             label="Ending time"
             component={this.renderField}
             />
-            <button type="submit" className="btn btn-block btn-primary mb-3">Create</button>
+            <Button type="submit" color="primary" className="mb-3" block>Create</Button>
         </form>
-        <button onClick={this.props.history.goBack} className="btn btn-block btn-secondary">Cancel</button>
+        <Button onClick={this.props.history.goBack} color="secondary" block>Cancel</Button>
+        </CardBlock>
+      </Card>
       </div>
       </div>
     );

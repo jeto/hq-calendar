@@ -1,15 +1,12 @@
-// import { FETCH_EVENTS, FETCH_EVENT } from '../actions/index';
+import { FETCH_COMMENTS, CREATE_COMMENT } from '../actions/types';
 
-const INITIAL_STATE = { all: [], event: null };
-
-export default function(state = INITIAL_STATE, action) {
-  // switch (action.type) {
-  //   case FETCH_EVENTS:
-  //     return { ...state, all: action.payload.data }
-  //   case FETCH_EVENT:
-  //     return { ...state, event: action.payload.data }
-  //   default:
-  //     return state;
-  //   }
-  return state
+export default function(state = [], action) {
+  switch (action.type) {
+    case FETCH_COMMENTS:
+      return [ ...action.payload.data ]
+    case CREATE_COMMENT:
+      return [ action.payload.data, ...state ]
+    default:
+      return state;
+    }
 }

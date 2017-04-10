@@ -1,16 +1,18 @@
 import axios from 'axios';
 import { push } from 'react-router-redux';
+import { reset } from 'redux-form';
 
 import { 
   FETCH_EVENTS,
   FETCH_EVENT,
   CREATE_EVENT,
-  DELETE_EVENT,
   EVENT_ERROR,
   AUTH_USER,
   DEAUTH_USER,
   AUTH_ERROR,
-  SIGNUP_ERROR
+  SIGNUP_ERROR,
+  CREATE_COMMENT,
+  FETCH_COMMENTS,
 } from './types';
 
 export function fetchEvents() {
@@ -85,10 +87,6 @@ export function deleteEvent(id) {
       headers: { auth: localStorage.getItem('token')}
     })
       .then(response => {
-        dispatch({
-          type: DELETE_EVENT,
-          payload: response
-        })
         dispatch(push(`/events/`));
       })
       .catch(err => {
@@ -151,4 +149,57 @@ export function signupError(error) {
     type: SIGNUP_ERROR,
     payload: error
   }
+}
+
+export function createComment(props) {
+  return function(dispatch) {
+    axios.post(`/api/comments`, props, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+        dispatch({
+          type: CREATE_COMMENT,
+          payload: response
+        });
+        dispatch(reset('EventDetails'));
+      })
+      .catch(err => {
+        dispatch(commentError(err.response.data))
+      })
+  }
+}
+
+export function fetchComments(id) {
+  return function(dispatch) {
+    axios.get(`/api/comments/${id}`, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+        dispatch({
+          type: FETCH_COMMENTS,
+          payload: response
+        });
+      })
+      .catch(err => {
+        dispatch(commentError(err.response.data))
+      })
+  }
+}
+
+export function deleteComment(id) {
+  return function(dispatch) {
+    axios.delete(`/api/comments/${id}`, {
+      headers: { auth: localStorage.getItem('token')}
+    })
+      .then(response => {
+
+      })
+      .catch(err => {
+        dispatch(commentError(err.response.data))
+      })
+  }
+}
+
+export function commentError(error) {
+  console.log('commenterror ', error)
 }
