@@ -1,7 +1,12 @@
 export const FETCH_EVENTS = 'FETCH_EVENTS';
 export const FETCH_EVENT = 'FETCH_EVENT';
+export const FETCH_EVENTS_FOR_USER = 'FETCH_EVENTS_FOR_USER';
 export const CREATE_EVENT = 'CREATE_EVENT';
 export const EVENT_ERROR = 'EVENT_ERROR';
+
+export const FETCH_PARTICIPANTS = 'FETCH_PARTICIPANTS';
+export const JOIN_EVENT = 'JOIN_EVENT';
+export const LEAVE_EVENT = 'LEAVE_EVENT';
 
 export const AUTH_USER = 'AUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';

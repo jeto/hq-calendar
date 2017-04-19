@@ -1,18 +1,14 @@
 import axios from 'axios';
+import querystring from 'querystring';
 import { push } from 'react-router-redux';
-import { reset } from 'redux-form';
 
 import { 
   FETCH_EVENTS,
   FETCH_EVENT,
+  FETCH_EVENTS_FOR_USER,
   CREATE_EVENT,
   EVENT_ERROR,
-  AUTH_USER,
-  DEAUTH_USER,
-  AUTH_ERROR,
-  SIGNUP_ERROR,
-  FETCH_COMMENTS,
-  FETCH_PARTICIPANTS
+  FETCH_PARTICIPANTS,
 } from './types';
 
 export function fetchEvents() {
@@ -28,6 +24,22 @@ export function fetchEvents() {
       .catch(err => {
         dispatch(eventError(err.response.data))
       })
+  }
+}
+
+export function fetchEventsForUser(id) {
+  return function(dispatch) {
+    axios.get(`/api/events/`,
+      querystring.stringify({ user: id }),
+      {headers: { auth: localStorage.getItem('token')}
+    }).then(response => {
+      dispatch({
+        type: FETCH_EVENTS_FOR_USER,
+        payload: response
+      })
+    }).catch(err => {
+      dispatch(eventError(err.response.data))
+    })
   }
 }
 
@@ -145,107 +157,4 @@ export function eventError(error) {
     type: EVENT_ERROR,
     payload: error
   }
-}
-
-export function signinUser({username, password}) {
-  return function(dispatch) {
-    axios.post(`/api/signin`, {username, password})
-      .then(response => {
-        dispatch({
-          type: AUTH_USER,
-          payload: response.data.user.id });
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userid', response.data.user.id);
-        dispatch(push(`/`));
-      })
-      .catch(err => {
-        dispatch(authError(err.response.data));
-      })
-  }
-}
-
-export function signupUser({username, email, password}) {
-  return function(dispatch) {
-    axios.post(`/api/signup`, {username, email, password})
-      .then(response => {
-        dispatch({
-          type: AUTH_USER,
-          payload: response.data.user.id });
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userid', response.data.user.id);
-        dispatch(push(`/`));
-      })
-      .catch(err => {
-        dispatch(signupError(err.response.data.error));
-      })
-  }
-}
-
-export function signoutUser() {
-  return function(dispatch) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userid');
-    dispatch({ type: DEAUTH_USER });
-    dispatch(push(`/signin`));
-  }
-}
-
-export function authError(error) {
-  return {
-    type: AUTH_ERROR,
-    payload: error
-  }
-}
-export function signupError(error) {
-  return {
-    type: SIGNUP_ERROR,
-    payload: error
-  }
-}
-
-export function createComment(props) {
-  return function(dispatch) {
-    axios.post(`/api/comments`, props, {
-      headers: { auth: localStorage.getItem('token')}
-    })
-      .then(response => {
-        dispatch(reset('EventDetails'));
-        dispatch(fetchComments(props.id))
-      })
-      .catch(err => {
-        dispatch(commentError(err.response.data))
-      })
-  }
-}
-
-export function fetchComments(id) {
-  return function(dispatch) {
-    axios.get(`/api/comments/${id}`, {
-      headers: { auth: localStorage.getItem('token')}
-    })
-      .then(response => {
-        dispatch({
-          type: FETCH_COMMENTS,
-          payload: response
-        });
-      })
-      .catch(err => {
-        dispatch(commentError(err.response.data))
-      })
-  }
-}
-
-export function deleteComment(id) {
-  return function(dispatch) {
-    return axios.delete(`/api/comments/${id}`, {
-      headers: { auth: localStorage.getItem('token')}
-    })
-    .catch(err => {
-      dispatch(commentError(err.response.data))
-    })
-  }
-}
-
-export function commentError(error) {
-  console.log('commenterror ', error)
 }
