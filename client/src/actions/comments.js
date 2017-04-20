@@ -3,6 +3,7 @@ import { reset } from 'redux-form';
 
 import { 
   FETCH_COMMENTS,
+  COMMENT_ERROR
 } from './types';
 
 export function createComment(props) {
@@ -49,5 +50,8 @@ export function deleteComment(id) {
 }
 
 export function commentError(error) {
-  console.log('commenterror ', error)
+  return {
+    type: COMMENT_ERROR,
+    payload: error
+  }
 }

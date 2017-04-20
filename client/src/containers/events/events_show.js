@@ -9,7 +9,7 @@ import { fetchComments, createComment, deleteComment } from '../../actions/comme
 import { Field, reduxForm } from 'redux-form'
 import moment from 'moment';
 import {
-  Card, CardBlock, CardTitle, Col,
+  Alert, Card, CardBlock, CardTitle, Col,
   ListGroupItem, ListGroup, InputGroupButton,
   Button, ButtonGroup, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
@@ -174,6 +174,16 @@ class EventDetails extends Component {
   }
 
   renderComments() {
+    console.log(this.props.commentError)
+    if(this.props.commentError) {
+      return (
+        <CardBlock>
+          <Alert color="danger">
+            <strong>Error fetching comments</strong> 
+          </Alert>
+        </CardBlock>
+      )
+    }
     return this.props.comments.sort((a, b) => {
       return +(a.posted < b.posted) || +(a.posted === b.posted) -1;
     }).map((comment) => {
@@ -215,9 +225,9 @@ class EventDetails extends Component {
     if(this.props.errorMessage) {
       return (
         <div className="row justify-content-md-center">
-        <div className="col-md-4 alert alert-danger">
+        <Alert color="danger" className="col-md-4">
           <strong>Oops!</strong> {this.props.errorMessage}
-        </div>
+        </Alert>
         </div>
       );
     }
@@ -240,10 +250,11 @@ function validate(values) {
 function mapStateToProps(state) {
   return {
     event: state.events.event,
-    comments: state.comments,
+    comments: state.comments.all,
     participants: state.events.participants,
     user: state.auth.currentuser,
-    errorMessage: state.events.error
+    errorMessage: state.events.error,
+    commentError: state.comments.error
   };
 }
 
