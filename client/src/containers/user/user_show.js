@@ -130,6 +130,24 @@ class UserPage extends Component {
   }
 
   render() {
+    if(!this.props.user && !this.props.errorMessage) {
+      return (
+        <div className="spinner">
+          <div className="bounce1"></div>
+          <div className="bounce2"></div>
+          <div className="bounce3"></div>
+        </div>
+    )
+    }
+    if(this.props.errorMessage) {
+      return (
+        <div className="row justify-content-md-center">
+        <div className="col-md-4 alert alert-danger">
+          <strong>Oops!</strong> {this.props.errorMessage}
+        </div>
+        </div>
+      );
+    }
     return (
       <Row className="justify-content-md-center">
       <Col lg="6">
@@ -207,7 +225,8 @@ function mapStateToProps(state) {
   return {
     events: state.events.user,
     user: state.auth.user,
-    current: state.auth.currentuser
+    current: state.auth.currentuser,
+    errorMessage: state.auth.error
   };
 }
 

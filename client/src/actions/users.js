@@ -64,7 +64,7 @@ export function fetchUser(id) {
         payload: response
       })
     }).catch(err => {
-      dispatch(authError(err));
+      dispatch(authError(err.response.data));
     })
   }
 }

@@ -73,6 +73,7 @@ export const get = (req, res, next) => {
       res.json(user);
     }) 
     .catch((err) => {
+      res.status(404).send('User not found');
       return next(err);
     });
 }

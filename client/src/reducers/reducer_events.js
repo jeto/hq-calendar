@@ -17,7 +17,7 @@ export default function(state = INITIAL_STATE, action) {
     case FETCH_EVENTS_FOR_USER:
       return { ...state, error: '', user: action.payload.data }
     case FETCH_PARTICIPANTS:
-      return { ...state, error: '', participants: action.payload.data }
+      return { ...state, participants: action.payload.data }
     case EVENT_ERROR:
       return { ...state, error: action.payload }
     default:

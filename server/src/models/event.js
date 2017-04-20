@@ -32,7 +32,7 @@ export function getEvent(req, res, next) {
       res.json(data);
     }, (data) => {
       if(data.code===0) {
-        res.status(404).json({ error: 'Event not found'});
+        res.status(404).json('Event not found');
       }
     }) 
     .catch((err) => {

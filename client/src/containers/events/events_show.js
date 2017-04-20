@@ -203,7 +203,7 @@ class EventDetails extends Component {
   }
 
   render() {
-    if(!this.props.event) {
+    if(!this.props.event && !this.props.errorMessage) {
       return (
         <div className="spinner">
           <div className="bounce1"></div>
@@ -216,7 +216,7 @@ class EventDetails extends Component {
       return (
         <div className="row justify-content-md-center">
         <div className="col-md-4 alert alert-danger">
-          <strong>Oops!</strong> {this.props.errorMessage.error}
+          <strong>Oops!</strong> {this.props.errorMessage}
         </div>
         </div>
       );
