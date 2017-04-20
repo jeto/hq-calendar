@@ -14,7 +14,7 @@ const localLogin = new LocalStrategy(function(username, password, done) {
         if(err.code === 0) { return done(null, false); }
       })
       .then((res) => {
-        if(res) { return done(null, { id: userid }); }
+        if(res) { return done(null, { id: userid, username: username }); }
         else return done(null, false);
       })
       .catch((err) => {

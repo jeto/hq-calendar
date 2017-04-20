@@ -24,6 +24,12 @@ export function getEvents(req, res, next) {
     });
 }
 
+export function getEventsForUser(id) {
+  return db.any('SELECT DISTINCT e.id, e.name, e.starttime, e.endtime, e.host '+
+        'from events as e, participants as p '+
+        'where (e.id = p.event_id and p.user_id = $1) or e.host = $1', id)
+}
+
 export function getEvent(req, res, next) {
   const eventID = parseInt(req.params.id);
   db.one(`SELECT *, (SELECT row_to_json(u) FROM

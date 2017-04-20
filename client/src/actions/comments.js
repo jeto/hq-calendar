@@ -15,7 +15,7 @@ export function createComment(props) {
         dispatch(fetchComments(props.id))
       })
       .catch(err => {
-        dispatch(commentError(err.response.data))
+        dispatch(commentError(err))
       })
   }
 }
@@ -32,7 +32,7 @@ export function fetchComments(id) {
         });
       })
       .catch(err => {
-        dispatch(commentError(err.response.data))
+        dispatch(commentError(err))
       })
   }
 }
@@ -43,7 +43,7 @@ export function deleteComment(id) {
       headers: { auth: localStorage.getItem('token')}
     })
     .catch(err => {
-      dispatch(commentError(err.response.data))
+      dispatch(commentError(err))
     })
   }
 }

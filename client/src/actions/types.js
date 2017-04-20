@@ -10,6 +10,7 @@ export const LEAVE_EVENT = 'LEAVE_EVENT';
 
 export const AUTH_USER = 'AUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
+export const FETCH_USER = 'FETCH_USER';
 export const SIGNUP_ERROR = 'SIGNUP_ERROR';
 export const DEAUTH_USER = 'DEAUTH_USER';
 

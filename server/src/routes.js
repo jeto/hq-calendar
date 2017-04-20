@@ -12,7 +12,9 @@ export default function(app) {
   app.post('/api/signup', user.signup)
   app.post('/api/signin', requireSignin, user.signin)
 
-  app.get('/api/events', requireAuth, events.getEvents)
+  app.get('/api/users/:id', user.get)
+
+  app.get('/api/events', requireAuth, event.get)
   app.get('/api/events/:id', requireAuth, events.getEvent)
   app.post('/api/events', requireAuth, events.createEvent)
   app.put('/api/events/:id', requireAuth, events.editEvent)

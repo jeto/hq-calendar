@@ -1,5 +1,4 @@
 import axios from 'axios';
-import querystring from 'querystring';
 import { push } from 'react-router-redux';
 
 import { 
@@ -29,9 +28,9 @@ export function fetchEvents() {
 
 export function fetchEventsForUser(id) {
   return function(dispatch) {
-    axios.get(`/api/events/`,
-      querystring.stringify({ user: id }),
-      {headers: { auth: localStorage.getItem('token')}
+    axios.get(`/api/events/`, {
+      params: { user: id },
+      headers: { auth: localStorage.getItem('token')}
     }).then(response => {
       dispatch({
         type: FETCH_EVENTS_FOR_USER,

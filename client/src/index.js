@@ -23,9 +23,16 @@ const store = createStore(
 )
 
 const token = localStorage.getItem('token');
+const user = {
+  id: parseInt(localStorage.getItem('userid'), 10),
+  username: localStorage.getItem('username')
+}
 
 if(token) {
-  store.dispatch({ type: AUTH_USER });
+  store.dispatch({
+    type: AUTH_USER,
+    payload: user
+  });
 }
 
 ReactDOM.render(

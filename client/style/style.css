@@ -46,6 +46,10 @@ label {
   height: 50px;
 }
 
+.nav-tabs {
+  cursor: pointer;
+}
+
 .App-header {
   background-color: black;
   height: 80px;

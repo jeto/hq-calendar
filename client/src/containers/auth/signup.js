@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 import validator from 'validator';
 import logo from '../../../public/logo.png';
-import * as actions from '../../actions';
+import { signupUser } from '../../actions/users';
 
 class Signup extends Component {
   handleFormSubmit(formProps) {
@@ -102,11 +102,15 @@ function validate(values) {
   const errors = {};
   if(!values.username) {
     errors.username = 'Required'
+  } else if(validator.isByteLength(values.username, {min:31})){
+    errors.username = 'Maximum length is 30 characters'
   }
   if(!values.email) {
     errors.email = 'Required'
   } else if(!validator.isEmail(values.email)) {
     errors.email = 'Invalid Email Address'
+  } else if(validator.isByteLength(values.email, {min:51})){
+    errors.email = 'Maximum length is 50 characters'
   }
   if(!values.password) {
     errors.password = 'Required'
@@ -115,7 +119,6 @@ function validate(values) {
     errors.passwordConfirm = true;
   }
   if(values.password !== values.passwordConfirm) {
-    errors.password = true;
     errors.passwordConfirm = "Passwords must match";
   }
   return errors
@@ -142,4 +145,4 @@ Signup = reduxForm({
   warn
 })(Signup);
 
-export default connect(mapStateToProps, actions)(Signup);
+export default connect(mapStateToProps, {signupUser})(Signup);

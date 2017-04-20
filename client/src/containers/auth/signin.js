@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Field, reduxForm } from 'redux-form';
 import logo from '../../../public/logo.png';
-import * as actions from '../../actions';
+import { signinUser } from '../../actions/users';
 
 class Signin extends Component {
   onSubmit({username, password}) {
@@ -75,10 +75,10 @@ function mapStateToProps(state) {
 function validate(values) {
   const errors = {};
   if(!values.username) {
-    errors.username = 'Required'
+    errors.username = true
   }
   if(!values.password) {
-    errors.password = 'Required'
+    errors.password = true
   }
   return errors
 }
@@ -88,4 +88,4 @@ Signin = reduxForm({
   validate
 })(Signin);
 
-export default connect(mapStateToProps, actions)(Signin);
+export default connect(mapStateToProps, {signinUser})(Signin);

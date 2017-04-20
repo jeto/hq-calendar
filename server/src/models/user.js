@@ -15,7 +15,7 @@ export function createUser(username, email, password) {
         })
         .then((hash) =>{
           return db.one(`INSERT INTO users(username, email, password)
-                  values($1, $2, $3) returning id`, [username, email, hash])
+                  values($1, $2, $3) returning id, username`, [username, email, hash])
         })
 }
 
@@ -44,35 +44,6 @@ export function getUserById(id) {
   return db.one('SELECT id, username, admin FROM users WHERE id=$1', id);
 }
 
-export function getUser(req, res, next) {
-  const userID = parseInt(req.params.id);
-  db.one('SELECT * FROM users WHERE ID=$1', userID)
-    .then((user) => {
-      res.json(user);
-    }) 
-    .catch((err) => {
-      return next(err);
-    });
-}
-
-export function updateUser(req, res, next) {
-  db.none('UPDATE users set name=$1, email=$2, passwordhash=$3 WHERE id=$5',
-    [req.body.name, req.body.email, req.body.passwordhash, parseInt(req.params.id)])
-    .then(() => {
-      res.status(200).end();
-    })
-    .catch((err) => {
-      return next(err);
-    });
-}
-
-export function deleteUser(req, res, next) {
-  const userID = parseInt(req.params.id);
-  db.result('DELETE FROM users where id = $1', userID)
-    .then((result) => {
-      res.json({message: `Removed ${result.rowCount} user`});
-    })
-    .catch((err) => {
-      return next(err);
-    })
+export function getUser(userID) {
+  return db.one('SELECT id, username, email FROM users WHERE ID=$1', userID)
 }

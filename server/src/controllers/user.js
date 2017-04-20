@@ -43,7 +43,10 @@ export const signup = (req, res, next) => {
 
         User.createUser(username, email, password)
             .then((data) => {
-              res.status(201).json({ token: tokenForUser(data) })
+              console.log(data)
+              res.status(201).json({ 
+                token: tokenForUser(data),
+                user: data })
             }, )
             .catch((err) => {
               return next(err);
@@ -52,4 +55,21 @@ export const signup = (req, res, next) => {
       .catch((err) => {
         return next(err);
       })
+}
+
+export const edit = (req, res, next) => {
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
+}
+
+export const get = (req, res, next) => {
+  const id = parseInt(req.params.id);
+  User.getUser(id)
+    .then((user) => {
+      res.json(user);
+    }) 
+    .catch((err) => {
+      return next(err);
+    });
 }
