@@ -30,6 +30,14 @@ class UserPage extends Component {
     }
   }
 
+  // Navigating from same component doesnt trigger componentwillmount
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.location !== this.props.location) {
+      this.props.fetchEventsForUser(nextProps.match.params.id);
+      this.props.fetchUser(nextProps.match.params.id);
+    }
+  }
+
   componentWillMount() {
     this.props.fetchEventsForUser(this.props.match.params.id);
     this.props.fetchUser(this.props.match.params.id);
