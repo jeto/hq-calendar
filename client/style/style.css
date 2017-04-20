@@ -72,9 +72,13 @@ label {
   min-height: 2em;
 }
 
-p {
-    word-break: break-all;
-    white-space: normal;
+.comment .comment-delete {
+  visibility: hidden;
+  z-index: 1;
+}
+
+.comment:hover .comment-delete {
+  visibility: visible;
 }
 
 .csstooltip {
