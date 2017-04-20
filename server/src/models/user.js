@@ -26,14 +26,14 @@ export function comparePassword(userID, candidatePassword) {
           })
 }
 
-export function getUsers(req, res, next) {
-  db.any('SELECT * FROM users ORDER BY id ASC;').
-    then((user) => {
-      res.json(user);
-    })
-    .catch((err) => {
-      return next(err);
-    });
+export function isAdmin(userID) {
+  return db.one('SELECT admin FROM users WHERE id=$1', userID)
+          .then((data) => {
+            return data.admin;
+          })
+          .catch((err) => {
+            return false;
+          })
 }
 
 export function getUserByUsername(username) {

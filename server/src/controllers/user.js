@@ -17,7 +17,10 @@ export function userFromToken(token) {
 }
 
 export const signin = (req, res, next) => {
-  res.send({ token: tokenForUser(req.user)});
+  res.send({
+    token: tokenForUser(req.user),
+    user: req.user  
+  });
 }
 
 export const signup = (req, res, next) => {
