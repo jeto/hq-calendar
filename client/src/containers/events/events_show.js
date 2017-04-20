@@ -174,7 +174,6 @@ class EventDetails extends Component {
   }
 
   renderComments() {
-    console.log(this.props.commentError)
     if(this.props.commentError) {
       return (
         <CardBlock>

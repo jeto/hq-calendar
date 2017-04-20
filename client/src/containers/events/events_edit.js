@@ -217,7 +217,7 @@ function validate(values) {
 function mapStateToProps(state) {
   return { 
     event: state.events.event,
-    comments: state.comments,
+    comments: state.comments.all,
     initialValues: state.events.event
   };
 }
