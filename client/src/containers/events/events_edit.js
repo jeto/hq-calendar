@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import * as actions from '../actions/index';
-import { Field, reduxForm } from 'redux-form'
+import { fetchEvent, editEvent, deleteEvent } from '../../actions/events';
+import { fetchComments, deletedComments } from '../../actions/comments';
+import validator from 'validator';
+import { Field, reduxForm } from 'redux-form';
 import moment from 'moment';
 import {
   Card, CardBlock, CardTitle,
-  ListGroupItem, ListGroup,
+  ListGroupItem, ListGroup, Col,
   Button, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
 
@@ -91,13 +93,14 @@ class EditEvent extends Component {
   renderEvent() {
     const { handleSubmit } = this.props;
     return (
-      <div className="col-lg-6">
+      <Col lg="6">
       <Card>
       <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
         <CardBlock className="float-right form-inline">
-          <Link to={{ pathname: `/events/${this.props.match.params.id}`}} >
-            <Button color="secondary">Discard Changes</Button>
-          </Link>
+          <Button
+            tag={Link}
+            to={'/events/'+this.props.match.params.id}
+            color="secondary">Discard Changes</Button>
           {this.renderDelete()}
           <Button type="submit" color="primary">Save</Button>
         </CardBlock>
@@ -143,7 +146,7 @@ class EditEvent extends Component {
           {this.renderComments()}
         </ListGroup>
       </Card>
-      </div>
+      </Col>
     );
   }
 
@@ -196,6 +199,8 @@ function validate(values) {
   const errors = {};
   if(!values.name) {
     errors.name = 'Required'
+  } else if(validator.isByteLength(values.name, {min:51})){
+    errors.name = 'Maximum length is 50 characters'
   }
   if(!values.starttime) {
     errors.starttime = 'Required'
@@ -221,5 +226,10 @@ EditEvent = reduxForm({
   form: 'EditEvent',
   validate
 })(EditEvent);
+
+const actions = {
+  fetchEvent, editEvent, deleteEvent,
+  fetchComments, deletedComments
+}
 
 export default connect(mapStateToProps, actions)(EditEvent);

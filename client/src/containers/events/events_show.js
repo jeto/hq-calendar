@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import * as actions from '../actions/index';
+import {
+  fetchEvent, fetchParticipants, deleteEvent,
+  joinEvent, leaveEvent
+} from '../../actions/events';
+import { fetchComments, createComment, deleteComment } from '../../actions/comments';
 import { Field, reduxForm } from 'redux-form'
 import moment from 'moment';
 import {
-  Card, CardBlock, CardTitle,
+  Card, CardBlock, CardTitle, Col,
   ListGroupItem, ListGroup, InputGroupButton,
-  Button, Modal, ModalHeader, ModalBody, ModalFooter
+  Button, ButtonGroup, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
 
 class EventDetails extends Component {
@@ -29,6 +33,17 @@ class EventDetails extends Component {
     const eventID = this.props.match.params.id;
     this.props.fetchEvent(eventID);
     this.props.fetchComments(eventID);
+    this.props.fetchParticipants(eventID);
+  }
+
+  onJoin() {
+    const id = this.props.event.id;
+    this.props.joinEvent(id);
+  }
+
+  onLeave() {
+    const id = this.props.event.id;
+    this.props.leaveEvent(id);
   }
 
   onDelete() {
@@ -41,22 +56,50 @@ class EventDetails extends Component {
     this.props.createComment(props)
   };
 
-  renderDelete(){
-    return (
-      <div>
-      <Button color="danger" className="float-right mx-3" onClick={this.toggle}>Delete</Button>
-      <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-        <ModalHeader toggle={this.toggle}>Delete event</ModalHeader>
-        <ModalBody>
-          Are you sure you want to delete this event?
-        </ModalBody>
-        <ModalFooter>
-          <Button color="danger" onClick={this.onDelete.bind(this)}>Delete</Button>
-          <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-        </ModalFooter>
-      </Modal>
-      </div>
+  deleteComment(id) {
+    this.props.deleteComment(id)
+      .then(() => {
+        this.props.fetchComments(this.props.event.id)
+      })
+  }
+
+  renderButtons(){
+    if(this.props.event.host.id === this.props.user.id) {
+      return (
+        <div>
+        <Button color="danger" className="float-right ml-3" onClick={this.toggle}>Delete</Button>
+        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+          <ModalHeader toggle={this.toggle}>Delete event</ModalHeader>
+          <ModalBody>
+            Are you sure you want to delete this event?
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" onClick={this.onDelete.bind(this)}>Delete</Button>
+            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
+          <Button
+            tag={Link}
+            to={'/events/edit/' + this.props.match.params.id}
+            color="secondary"
+            className="float-right">Edit</Button>
+        </div>
     )
+    } else if(this.props.participants.filter((u) => u.user_id === this.props.user.id).length > 0) {
+      return (
+      <Button
+        color="warning"
+        className="float-right"
+        onClick={this.onLeave.bind(this)}>Leave</Button>
+    )
+    } else {
+      return (
+        <Button
+        color="primary"
+        className="float-right"
+        onClick={this.onJoin.bind(this)}>Join</Button>
+      )
+    }
   }
 
   renderEvent() {
@@ -65,14 +108,10 @@ class EventDetails extends Component {
     const { handleSubmit } = this.props;
     // const endtime = new Date(event.endtime);
     return (
-      <div className="col-lg-6">
+      <Col lg="6">
       <Card>
         <CardBlock>
-          <Button color="primary" className="float-right">Join</Button>
-          {this.renderDelete()}
-          <Link to={{ pathname: `/events/edit/${this.props.match.params.id}`}} >
-            <Button color="secondary" className="float-right">Edit</Button>
-          </Link>
+          {this.renderButtons()}
           <CardTitle>{event.name}</CardTitle>
           <div className="card-text mt-5">
           {event.description.split("\n").map((line, i) => {
@@ -83,7 +122,15 @@ class EventDetails extends Component {
         <ListGroup className="list-group-flush">
           <ListGroupItem><strong>Date:</strong> &nbsp; {moment(starttime).format('DD MMM YYYY')}</ListGroupItem>
           <ListGroupItem><strong>Time:</strong> &nbsp; {moment(starttime).format('HH:mm')}</ListGroupItem>
-          <ListGroupItem><strong>Host:</strong> &nbsp; {event.host.username}</ListGroupItem>
+          <ListGroupItem><strong>Participants:</strong> &nbsp;
+              <Button
+                tag={Link}
+                to={"/user/" + event.host.id}
+                color="success"
+                size="sm"
+                className="mx-2">{event.host.username}</Button>
+            {this.renderParticipants()}
+          </ListGroupItem>
         </ListGroup>
         <CardBlock>
           <CardTitle>Comments</CardTitle>
@@ -105,8 +152,25 @@ class EventDetails extends Component {
           {this.renderComments()}
         </ListGroup>
       </Card>
-      </div>
+      </Col>
     );
+  }
+
+  renderParticipants() {
+    return this.props.participants.filter((user) => {
+      return user.user_id !== this.props.event.host.id
+    })
+      .map((user) => {
+      return (
+        <Button
+          key={user.user_id}
+          tag={Link}
+          to={"/user/" + user.user_id}
+          outline color="success"
+          size="sm"
+          className="mx-2">{user.username}</Button>
+      );
+    })
   }
 
   renderComments() {
@@ -114,11 +178,25 @@ class EventDetails extends Component {
       return +(a.posted < b.posted) || +(a.posted === b.posted) -1;
     }).map((comment) => {
       return(
-        <ListGroupItem key={comment.posted}>
+        <ListGroupItem key={comment.posted} className="comment justify-content-between">
+        <div>
+          <Link to={"/user/" + comment.author}>
           <div className="csstooltip"><strong>{comment.username}:&nbsp;</strong>
             <span className="csstooltiptext">{moment(comment.posted).format('DD.MM.YY HH:mm')}</span>
           </div>
+          </Link>
           <span>{comment.content}</span>
+        </div>
+          {this.props.user.id === comment.author ?
+            <ButtonGroup className="comment-delete float-right">
+            <Button color="primary" size="sm">Edit</Button>
+            <Button
+            color="danger"
+            size="sm"
+            onClick={()=>this.deleteComment(comment.id)}>
+            Delete
+          </Button>
+          </ButtonGroup> : ''}
         </ListGroupItem>
       )
     });
@@ -163,9 +241,18 @@ function mapStateToProps(state) {
   return {
     event: state.events.event,
     comments: state.comments,
+    participants: state.events.participants,
+    user: state.auth.currentuser,
     errorMessage: state.events.error
   };
 }
+
+const actions = {
+  fetchEvent, fetchParticipants, deleteEvent,
+  joinEvent, leaveEvent, fetchComments,
+  createComment, deleteComment
+}
+
 EventDetails = reduxForm({
   form: 'EventDetails',
   validate

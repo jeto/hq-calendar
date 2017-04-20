@@ -1,10 +1,11 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchEvents } from '../actions/index';
+import { fetchEvents } from '../../actions/events';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
+
 
 class EventList extends Component {
   componentWillMount() {
@@ -45,8 +46,9 @@ class EventList extends Component {
             <div className="calendar-date-field">
             {e.filter((event)=>{
               return (moment(event.starttime).isSame(d, 'day'))
-              }
-            ).map((event) => {
+            }).sort((a, b) => {
+              return +(a.starttime > b.starttime) || +(a.starttime === b.starttime) -1;
+            }).map((event) => {
               return (
                 <div key={event.id}>
                 <Link className="card card-link my-1" to={"/events/" + event.id}>
@@ -76,6 +78,7 @@ class EventList extends Component {
           ))
     return (
       <div className="row justify-content-md-center">
+        <h5>{moment().format('MMMM')}</h5>
         <div className="col-12 col-md-auto table-responsive">
         <table className="table table-bordered">
           <thead className="thead-inverse table-sm">

@@ -2,9 +2,10 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form'
-import { createEvent } from '../actions/index';
+import { createEvent } from '../../actions/events';
+import validator from 'validator';
 import moment from 'moment';
-import { Card, CardBlock, CardTitle, Button } from 'reactstrap';
+import { Card, CardBlock, CardTitle, Button, Col } from 'reactstrap';
 
 class EventsNew extends Component {
   onSubmit(props) {
@@ -30,7 +31,7 @@ class EventsNew extends Component {
     const { handleSubmit } = this.props;
     return (
       <div className="row justify-content-md-center">
-      <div className="col-lg-6">
+      <Col lg="6">
       <Card>
         <CardBlock>
         <CardTitle>Create new event</CardTitle>
@@ -70,7 +71,7 @@ class EventsNew extends Component {
         <Button onClick={this.props.history.goBack} color="secondary" block>Cancel</Button>
         </CardBlock>
       </Card>
-      </div>
+      </Col>
       </div>
     );
   }
@@ -80,6 +81,8 @@ function validate(values) {
   const errors = {};
   if(!values.name) {
     errors.name = 'Required'
+  } else if(validator.isByteLength(values.name, {min:51})){
+    errors.name = 'Maximum length is 50 characters'
   }
   if(!values.starttime) {
     errors.starttime = 'Required'
