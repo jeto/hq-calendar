@@ -51,19 +51,7 @@ class UserPage extends Component {
     })
     if(upcoming.length>0) {
       return upcoming.map(event => {
-        return (
-           <Link
-          key={event.id}
-          to={"/events/" + event.id}
-          className="list-group-item flex-column align-items-start">
-          <div 
-          className="d-flex w-100 justify-content-between">
-            <h5 className="mb-1">{event.name}</h5>
-            <small>{moment(event.starttime).fromNow()}</small>
-          </div>
-          <small>{moment(event.starttime).format("dddd, MMMM Do YYYY, HH:mm")}</small>
-          </Link>
-        )
+        return this.renderEvent(event)
     })
     } else {
       return (
@@ -83,19 +71,7 @@ class UserPage extends Component {
     })
     if(past.length>0){
       return past.map(event => {
-        return (
-           <Link
-          key={event.id}
-          to={"/events/" + event.id}
-          className="list-group-item flex-column align-items-start">
-          <div 
-          className="d-flex w-100 justify-content-between">
-            <h5 className="mb-1">{event.name}</h5>
-            <small className="text-muted">{moment(event.starttime).fromNow()}</small>
-          </div>
-          <small>{moment(event.starttime).format("dddd, MMMM Do YYYY, HH:mm")}</small>
-          </Link>
-        )
+        return this.renderEvent(event)
     })
     } else {
       return (
@@ -114,19 +90,7 @@ class UserPage extends Component {
     })
     if(own.length>0) {
       return own.map(event => {
-        return (
-           <Link
-          key={event.id}
-          to={"/events/" + event.id}
-          className="list-group-item flex-column align-items-start">
-          <div 
-          className="d-flex w-100 justify-content-between">
-            <h5 className="mb-1">{event.name}</h5>
-            <small className="text-muted">{moment(event.starttime).fromNow()}</small>
-          </div>
-          <small>{moment(event.starttime).format("dddd, MMMM Do YYYY, HH:mm")}</small>
-          </Link>
-        )
+        return this.renderEvent(event)
       })
     } else {
       return (
@@ -135,6 +99,22 @@ class UserPage extends Component {
         </ListGroupItem>
       )
     }
+  }
+
+  renderEvent(event) {
+    return (
+      <Link
+      key={event.id}
+      to={"/events/" + event.id}
+      className="list-group-item flex-column align-items-start">
+      <div 
+      className="d-flex w-100 justify-content-between">
+        <h5 className="mb-1">{event.name}</h5>
+        <small className="text-muted">{moment(event.starttime).fromNow()}</small>
+      </div>
+      <small>{moment(event.starttime).format("dddd, MMMM Do YYYY, HH:mm")}</small>
+      </Link>
+    )
   }
 
   render() {
