@@ -1,5 +1,4 @@
 import {db} from '../db/database';
-import { userFromToken } from '../controllers/user';
 
 export function createComment(user, event, content) {
   return db.one('with ins AS(' +
@@ -11,11 +10,13 @@ export function createComment(user, event, content) {
 
 export function getComments(req, res, next) {
   const eventID = parseInt(req.params.id);
-  db.any('SELECT comments.*, users.username FROM comments INNER JOIN users ON comments.author = users.id WHERE event=$1', eventID)
+  db.any('SELECT comments.*, users.username FROM comments '+
+         'INNER JOIN users ON comments.author = users.id WHERE event=$1',eventID)
     .then((data) => {
       res.json(data);
     })
     .catch((err) => {
+      res.status(500).send('Error fetching comments');
       return next(err);
     })
 }
@@ -29,6 +30,9 @@ export function isOwnerOrHost(id, user) {
                 ' WHERE c.id=$1 and c.event = e.id', id)
           .then(result => {
             return result.author === user || result.host === user
+          })
+          .catch(err => {
+            return false
           })
 }
 

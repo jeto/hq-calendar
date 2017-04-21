@@ -16,6 +16,7 @@ export const remove = (req, res, next) => {
             res.json({message: `Removed ${result.rowCount} comment`});
           })
           .catch((err) => {
+            res.status(500).send('Error deleting comment');
             return next(err);
           })
       } else {
@@ -41,6 +42,7 @@ export const add = (req, res, next) => {
       res.status(201).json(data);
     })
     .catch((err) => {
+      res.status(500).send('Error creating comment');
       return next(err);
     })
 }

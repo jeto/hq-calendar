@@ -13,6 +13,7 @@ export function getEvents(req, res, next) {
       res.json(data);
     })
     .catch((err) => {
+      res.status(500).send('Error fetching events');
       return next(err);
     });
 }
@@ -36,7 +37,7 @@ export function getEvent(req, res, next) {
       }
     }) 
     .catch((err) => {
-      res.status(400).json({ error: err })
+      res.status(500).send('Error fetching event');
       return next(err);
     });
 }
@@ -65,6 +66,7 @@ export function getParticipants(req, res, next) {
       res.json(data);
     })
     .catch((err) => {
+      res.status(500).send('Error fetching participants');
       return next(err);
     })
 }
@@ -80,6 +82,7 @@ export function joinEvent(req, res, next) {
       res.json(result)
     })
     .catch((err) => {
+      res.status(500).send('Error joining event');
       return next(err);
     })
 }
@@ -92,6 +95,7 @@ export function leaveEvent(req, res, next) {
       res.json(result);
     })
     .catch((err) => {
+      res.status(500).send('Error leaving event');
       return next(err);
     })
 }
