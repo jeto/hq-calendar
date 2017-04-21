@@ -11,6 +11,16 @@ p {
     white-space: normal;
 }
 
+p.inline {
+  display: inline;
+}
+
+span {
+  word-break: break-all;
+}
+
+/* Animations */
+
 .fade-enter {
   opacity: 0;
   z-index: 1;
@@ -18,7 +28,57 @@ p {
 
 .fade-enter.fade-enter-active {
   opacity: 1;
-  transition: opacity 250ms ease-in;
+  transition: height 250ms ease-in;
+}
+
+.participant {
+  perspective: 100px;
+}
+.participant-enter {
+  opacity: 0.01;
+  transform: rotateY(-90deg);
+}
+.participant-enter.participant-enter-active {
+  opacity: 1;
+  transform: none;
+  transition: all 500ms cubic-bezier(.36,-0.64,.34,1.76);
+}
+.participant-leave {
+  opacity: 1;
+}
+.participant-leave.participant-leave-active {
+  opacity: 0.01;
+  transform: rotateY(-90deg);
+  transition: all 300ms cubic-bezier(.36,-0.64,.34,1.76);
+}
+
+.comment {
+  height: auto;
+}
+
+.comment-enter {
+  opacity: 0.01;
+  height: 0;
+  padding: 0rem 1.25rem;
+}
+
+.comment-enter.comment-enter-active {
+  opacity: 1;
+  padding: 0.75rem 1.25rem;
+  height: auto;
+  transition: all 500ms ease-in-out;
+}
+
+.comment-leave {
+  opacity: 1;
+  height: auto;
+}
+
+.comment-leave.comment-leave-active {
+  opacity: 0.01;
+  height: 0;
+  padding: 0rem 1.25rem;
+  transition: all 300ms ease-in-out;
 }
 
 .login-bar {
@@ -41,6 +101,8 @@ p {
 .btn-signin:hover {
   background-color: #474a4c;
 }
+
+/* Header */
 
 .logo {
   position: absolute;
@@ -65,14 +127,7 @@ p {
   cursor: pointer;
 }
 
-.App-header {
-  background-color: black;
-  height: 80px;
-  margin-bottom: 50px;
-  padding: 20px;
-  color: white;
-  text-align: center;
-}
+/* Calendar */
 
 .calendar-date-name {
   margin-top: -0.75rem;
@@ -87,13 +142,19 @@ p {
   min-height: 2em;
 }
 
+/* Comments */
+
 .comment .comment-delete {
   visibility: hidden;
+  opacity: 0;
   z-index: 1;
+  transition: all 300ms ease-in-out 500ms;
 }
 
 .comment:hover .comment-delete {
   visibility: visible;
+  opacity: 1;
+  transition: all 500ms ease-in-out 300ms;
 }
 
 .csstooltip {
@@ -135,6 +196,8 @@ p {
     border-style: solid;
     border-color: black transparent transparent transparent;
 }
+
+/* Loading animation */
 
 .spinner {
   margin: 100px auto 0;
