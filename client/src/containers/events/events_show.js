@@ -3,16 +3,17 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
   fetchEvent, fetchParticipants, deleteEvent,
-  joinEvent, leaveEvent
+  joinEvent, leaveEvent, clearEvent
 } from '../../actions/events';
-import { fetchComments, createComment, deleteComment } from '../../actions/comments';
-import { Field, reduxForm } from 'redux-form'
 import moment from 'moment';
 import {
   Alert, Card, CardBlock, CardTitle, Col,
-  ListGroupItem, ListGroup, InputGroupButton,
-  Button, ButtonGroup, Modal, ModalHeader, ModalBody, ModalFooter
+  ListGroupItem, ListGroup,
+  Button, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap'
+import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import Spinner from '../../components/spinner';
+import Comments from '../comments/comments';
 
 class EventDetails extends Component {
   constructor(props) {
@@ -29,11 +30,22 @@ class EventDetails extends Component {
     })
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.location !== this.props.location) {
+      const eventID = this.props.match.params.id;
+      this.props.fetchEvent(eventID);
+      this.props.fetchParticipants(eventID);
+    }
+  }
+
   componentWillMount() {
     const eventID = this.props.match.params.id;
     this.props.fetchEvent(eventID);
-    this.props.fetchComments(eventID);
     this.props.fetchParticipants(eventID);
+  }
+
+  componentWillUnmount() {
+    this.props.clearEvent();
   }
 
   onJoin() {
@@ -49,18 +61,6 @@ class EventDetails extends Component {
   onDelete() {
     const id = this.props.event.id
     this.props.deleteEvent(id)
-  }
-
-  onSubmit(props) {
-    props.id = this.props.match.params.id
-    this.props.createComment(props)
-  };
-
-  deleteComment(id) {
-    this.props.deleteComment(id)
-      .then(() => {
-        this.props.fetchComments(this.props.event.id)
-      })
   }
 
   renderButtons(){
@@ -105,7 +105,6 @@ class EventDetails extends Component {
   renderEvent() {
     const event = this.props.event;
     const starttime = new Date(event.starttime);
-    const { handleSubmit } = this.props;
     // const endtime = new Date(event.endtime);
     return (
       <Col lg="6">
@@ -123,34 +122,21 @@ class EventDetails extends Component {
           <ListGroupItem><strong>Date:</strong> &nbsp; {moment(starttime).format('DD MMM YYYY')}</ListGroupItem>
           <ListGroupItem><strong>Time:</strong> &nbsp; {moment(starttime).format('HH:mm')}</ListGroupItem>
           <ListGroupItem><strong>Participants:</strong> &nbsp;
-              <Button
-                tag={Link}
-                to={"/user/" + event.host.id}
-                color="success"
-                size="sm"
-                className="mx-2">{event.host.username}</Button>
-            {this.renderParticipants()}
+            <Button
+              tag={Link}
+              to={"/user/" + event.host.id}
+              color="success"
+              size="sm"
+              className="mx-2">{event.host.username}</Button>
+            <CSSTransitionGroup
+              transitionName="participant"
+              transitionEnterTimeout={500}
+              transitionLeaveTimeout={300}>
+              {this.renderParticipants()}
+            </CSSTransitionGroup>
           </ListGroupItem>
         </ListGroup>
-        <CardBlock>
-          <CardTitle>Comments</CardTitle>
-          <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-          <div className="input-group">
-            <Field
-              name="content"
-              component="input"
-              type="text"
-              className="form-control"
-              />
-            <InputGroupButton>
-              <Button type="submit" color="secondary">Send</Button>
-            </InputGroupButton>
-          </div>
-          </form>
-        </CardBlock>
-        <ListGroup className="list-group-flush">
-          {this.renderComments()}
-        </ListGroup>
+        <Comments event={this.props.match.params.id} />
       </Card>
       </Col>
     );
@@ -173,53 +159,9 @@ class EventDetails extends Component {
     })
   }
 
-  renderComments() {
-    if(this.props.commentError) {
-      return (
-        <CardBlock>
-          <Alert color="danger">
-            <strong>Error fetching comments</strong> 
-          </Alert>
-        </CardBlock>
-      )
-    }
-    return this.props.comments.sort((a, b) => {
-      return +(a.posted < b.posted) || +(a.posted === b.posted) -1;
-    }).map((comment) => {
-      return(
-        <ListGroupItem key={comment.posted} className="comment justify-content-between">
-        <div>
-          <Link to={"/user/" + comment.author}>
-          <div className="csstooltip"><strong>{comment.username}:&nbsp;</strong>
-            <span className="csstooltiptext">{moment(comment.posted).format('DD.MM.YY HH:mm')}</span>
-          </div>
-          </Link>
-          <span>{comment.content}</span>
-        </div>
-          {this.props.user.id === comment.author ?
-            <ButtonGroup className="comment-delete float-right">
-            <Button color="primary" size="sm">Edit</Button>
-            <Button
-            color="danger"
-            size="sm"
-            onClick={()=>this.deleteComment(comment.id)}>
-            Delete
-          </Button>
-          </ButtonGroup> : ''}
-        </ListGroupItem>
-      )
-    });
-  }
-
   render() {
-    if(!this.props.event && !this.props.errorMessage) {
-      return (
-        <div className="spinner">
-          <div className="bounce1"></div>
-          <div className="bounce2"></div>
-          <div className="bounce3"></div>
-        </div>
-    )
+    if(!this.props.event) {
+      return <Spinner />
     }
     if(this.props.errorMessage) {
       return (
@@ -238,34 +180,20 @@ class EventDetails extends Component {
   }
 }
 
-function validate(values) {
-  const errors = {}
-  if(!values.content) {
-    errors.content = true;
-  }
-  return errors;
-}
-
 function mapStateToProps(state) {
   return {
+    eventready: state.events.eventready,
+    participantsready: state.events.participantsready,
     event: state.events.event,
-    comments: state.comments.all,
     participants: state.events.participants,
     user: state.auth.currentuser,
     errorMessage: state.events.error,
-    commentError: state.comments.error
   };
 }
 
 const actions = {
-  fetchEvent, fetchParticipants, deleteEvent,
-  joinEvent, leaveEvent, fetchComments,
-  createComment, deleteComment
+  fetchEvent, fetchParticipants, deleteEvent, clearEvent,
+  joinEvent, leaveEvent
 }
-
-EventDetails = reduxForm({
-  form: 'EventDetails',
-  validate
-})(EventDetails);
 
 export default connect(mapStateToProps, actions)(EventDetails);
