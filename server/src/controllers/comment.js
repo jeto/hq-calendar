@@ -23,7 +23,7 @@ export const remove = (req, res, next) => {
         res.status(401).send('Unauthorized');
       }
   }).catch(err =>{
-      res.status(500).send(err.message);
+      res.status(500).send('Error deleting comment');
       return next(err);
   })
 }
@@ -34,7 +34,7 @@ export const add = (req, res, next) => {
   const content = req.body.content;
 
   if(!event || !content) {
-    return res.status(422).send({ error: 'Event and content required' })
+    return res.status(400).send('Event and content required')
   }
 
   Comment.createComment(user, event, content)

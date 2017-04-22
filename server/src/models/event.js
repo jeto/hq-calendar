@@ -7,15 +7,8 @@ export function createEvent(name, description, starttime, endtime, host) {
           [name, description, starttime, endtime, host])
 }
 
-export function getEvents(req, res, next) {
-  db.any(`SELECT id, name, starttime, endtime from events`)
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      res.status(500).send('Error fetching events');
-      return next(err);
-    });
+export function getEvents() {
+  return db.any(`SELECT id, name, starttime, endtime from events`)
 }
 
 export function getEventsForUser(id) {

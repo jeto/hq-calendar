@@ -29,33 +29,34 @@ export const signup = (req, res, next) => {
   const password = req.body.password;
 
   if (!username || !email || !password) {
-    return res.status(422).send({ error: 'You must provide username, email and password' })
+    return res.status(400).send({ error: 'You must provide username, email and password' })
   }
   if(!validator.isEmail(email)) {
-    return res.status(422).send({ error: 'Invalid email address'})
+    return res.status(400).send({ error: 'Invalid email address'})
   }
   if(validator.isByteLength(password,{max:7})) {
-    return res.status(422).send({ error: 'Password has to be at least 8 characters'})
+    return res.status(400).send({ error: 'Password has to be at least 8 characters'})
   }
 
   User.checkIfExists(username, email)
       .then((data) => {
         if(data.exists) {
-          return res.status(422).send({ error: 'Username or email already used' });
+          return res.status(400).send({ error: 'Username or email already used' });
         }
 
         User.createUser(username, email, password)
             .then((data) => {
-              console.log(data)
               res.status(201).json({ 
                 token: tokenForUser(data),
                 user: data })
             }, )
             .catch((err) => {
+              res.status(500).send('Error creating user');
               return next(err);
             })
       })
       .catch((err) => {
+        res.status(500).send('Error creating user');
         return next(err);
       })
 }

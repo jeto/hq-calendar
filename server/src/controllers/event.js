@@ -10,10 +10,18 @@ export const get = (req, res, next) => {
         res.json(data);
       })
       .catch(err => {
+        res.status(500).send('Error fetching events');
         return next(err);
       })
   } else {
-    Event.getEvents(req, res, next);
+    Event.getEvents()
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => {
+        res.status(500).send('Error fetching events');
+        return next(err);
+      });
   }
 }
 
@@ -87,12 +95,12 @@ export const remove = (req, res, next) => {
 
 function validate(name, description, starttime, endtime, host) {
   if(!name || !starttime || !host) {
-    return res.status(422).send({ error: 'Name, starttime and host required' })
+    return res.status(400).send('Name, starttime and host required')
   }
   if(validator.isByteLength(name, {min:51})) {
-    return res.status(422).send({ error: 'Maximum length for event name is 50 characters'})
+    return res.status(400).send('Maximum length for event name is 50 characters')
   }
   if(starttime>endtime) {
-    return res.status(422).send({ error: "Ending time can't be before starting time" })
+    return res.status(400).send("Ending time can't be before starting time")
   }
 }
