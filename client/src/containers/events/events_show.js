@@ -173,7 +173,7 @@ class EventDetails extends Component {
       );
     }
     return (
-      <div className="row justify-content-md-center">
+      <div className="row justify-content-md-center mb-5">
         {this.renderEvent()}
       </div>
     );

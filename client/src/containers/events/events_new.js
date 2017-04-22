@@ -5,7 +5,7 @@ import { Field, reduxForm } from 'redux-form'
 import { createEvent } from '../../actions/events';
 import validator from 'validator';
 import moment from 'moment';
-import { Card, CardBlock, CardTitle, Button, Col } from 'reactstrap';
+import { Card, CardBlock, CardTitle, Button, Col, Row } from 'reactstrap';
 
 class EventsNew extends Component {
   onSubmit(props) {
@@ -30,7 +30,7 @@ class EventsNew extends Component {
   render() {
     const { handleSubmit } = this.props;
     return (
-      <div className="row justify-content-md-center">
+      <Row className="justify-content-md-center mb-5">
       <Col lg="6">
       <Card>
         <CardBlock>
@@ -72,7 +72,7 @@ class EventsNew extends Component {
         </CardBlock>
       </Card>
       </Col>
-      </div>
+      </Row>
     );
   }
 }

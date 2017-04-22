@@ -148,7 +148,7 @@ class UserPage extends Component {
               className={classnames({ active: this.state.activeTab === '1' })}
               onClick={() => { this.toggle('1');}}
             >
-            Upcoming Events
+            Upcoming
             </NavLink>
           </NavItem>
           <NavItem>
@@ -164,7 +164,7 @@ class UserPage extends Component {
               className={classnames({ active: this.state.activeTab === '3' })}
               onClick={() => { this.toggle('3');}}
             > 
-            Past Events
+            Past
             </NavLink>
           </NavItem>
         </Nav>
