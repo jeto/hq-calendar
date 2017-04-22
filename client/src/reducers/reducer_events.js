@@ -1,4 +1,5 @@
 import { 
+  CLEAR_EVENT,
   FETCH_EVENTS,
   FETCH_EVENT,
   FETCH_EVENTS_FOR_USER,
@@ -6,10 +7,18 @@ import {
   EVENT_ERROR
 } from '../actions/types';
 
-const INITIAL_STATE = { all: [], event: null, participants: [], user: [], error: '' };
+const INITIAL_STATE = {
+  all: [],
+  event: null,
+  participants: [],
+  user: [],
+  error: ''
+};
 
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
+    case CLEAR_EVENT:
+      return { ...state, event: null, participants: [] }
     case FETCH_EVENTS:
       return { ...state, error: '', all: action.payload.data }
     case FETCH_EVENT:

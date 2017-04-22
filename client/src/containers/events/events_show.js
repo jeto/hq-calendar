@@ -182,8 +182,6 @@ class EventDetails extends Component {
 
 function mapStateToProps(state) {
   return {
-    eventready: state.events.eventready,
-    participantsready: state.events.participantsready,
     event: state.events.event,
     participants: state.events.participants,
     user: state.auth.currentuser,

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { push } from 'react-router-redux';
 
 import { 
+  CLEAR_EVENT,
   FETCH_EVENTS,
   FETCH_EVENT,
   FETCH_EVENTS_FOR_USER,
@@ -9,6 +10,12 @@ import {
   EVENT_ERROR,
   FETCH_PARTICIPANTS,
 } from './types';
+
+export function clearEvent() {
+  return function(dispatch) {
+    dispatch({ type: CLEAR_EVENT })
+  }
+}
 
 export function fetchEvents() {
   return function(dispatch) {

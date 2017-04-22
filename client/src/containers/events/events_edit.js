@@ -28,6 +28,14 @@ class EditEvent extends Component {
     })
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.location !== this.props.location) {
+      const eventID = this.props.match.params.id;
+      this.props.fetchEvent(eventID);
+      this.props.fetchComments(eventID);
+    }
+  }
+
   componentWillMount() {
     const eventID = this.props.match.params.id;
     this.props.fetchEvent(eventID);

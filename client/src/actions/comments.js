@@ -2,9 +2,16 @@ import axios from 'axios';
 import { reset } from 'redux-form';
 
 import { 
+  CLEAR_COMMENTS,
   FETCH_COMMENTS,
   COMMENT_ERROR
 } from './types';
+
+export function clearComments() {
+  return function(dispatch) {
+    dispatch({ type: CLEAR_COMMENTS })
+  }
+}
 
 export function createComment(props) {
   return function(dispatch) {
@@ -12,7 +19,7 @@ export function createComment(props) {
       headers: { auth: localStorage.getItem('token')}
     })
       .then(response => {
-        dispatch(reset('EventDetails'));
+        dispatch(reset('Comments'));
         dispatch(fetchComments(props.id))
       })
       .catch(err => {

@@ -96,8 +96,6 @@ class Comments extends Component {
       <ListGroup className="list-group-flush">
       <CSSTransitionGroup
         transitionName="comment"
-        transitionAppear={true}
-        transitionAppearTimeout={500}
         transitionEnterTimeout={500}
         transitionLeaveTimeout={300}>
         {this.renderComments()}

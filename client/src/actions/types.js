@@ -1,3 +1,4 @@
+export const CLEAR_EVENT = 'CLEAR_EVENT';
 export const FETCH_EVENTS = 'FETCH_EVENTS';
 export const FETCH_EVENT = 'FETCH_EVENT';
 export const FETCH_EVENTS_FOR_USER = 'FETCH_EVENTS_FOR_USER';
@@ -14,6 +15,7 @@ export const FETCH_USER = 'FETCH_USER';
 export const SIGNUP_ERROR = 'SIGNUP_ERROR';
 export const DEAUTH_USER = 'DEAUTH_USER';
 
+export const CLEAR_COMMENTS = 'CLEAR_COMMENTS';
 export const FETCH_COMMENTS = 'FETCH_COMMENTS';
 export const CREATE_COMMENT = 'CREATE_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';
