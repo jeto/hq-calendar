@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import createHistory from 'history/createBrowserHistory';
-// import { Router } from 'react-router';
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux'
 import reduxThunk from 'redux-thunk';
 

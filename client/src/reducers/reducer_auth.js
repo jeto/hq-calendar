@@ -19,7 +19,7 @@ export default function(state = INITIAL_STATE, action) {
     case SIGNUP_ERROR:
       return { ...state, signupError: action.payload };
     case DEAUTH_USER:
-      return { ...state, auhtenticated: false, currentuser: {} };
+      return { ...state, authenticated: false, currentuser: {} };
     default:
       return state;
   }
