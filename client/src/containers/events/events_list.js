@@ -5,9 +5,32 @@ import { fetchEvents } from '../../actions/events';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
+import {
+  Card, CardBlock, CardHeader,
+  TabContent, TabPane, Nav, NavItem, NavLink, Row, Col,
+  ListGroupItem, ListGroup
+} from 'reactstrap'
+import classnames from 'classnames';
+import EventCalendar from './events_calendar';
 
 
 class EventList extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      activeTab: '1'
+    };
+  }
+
+  toggle = tab => {
+    if(this.state.activeTab !== tab) {
+      this.setState({
+        activeTab: tab
+      });
+    }
+  }
+
   componentWillMount() {
     this.props.fetchEvents();
   }
@@ -22,112 +45,121 @@ class EventList extends Component {
     }
   }
 
-  constructDates() {
-    let day = moment();
-    var start = moment(day).startOf('month').startOf('isoWeek');
-    var end = moment(day).endOf('month').endOf('isoWeek');
-    let dates = [];
-    while(start <= end) {
-      dates.push(start.clone());
-      start.add(1, 'days');
+  renderUpcoming() {
+    let upcoming = this.props.events.filter(event => {
+      return (moment(event.starttime).isAfter(moment()))
+    }).sort((a, b) => {
+      return +(a.starttime > b.starttime) || +(a.starttime === b.starttime) -1;
+    })
+    if(upcoming.length>0) {
+      return upcoming.map(event => {
+        return this.renderEvent(event)
+    })
+    } else {
+      return (
+        <ListGroupItem>
+          No upcoming events
+        </ListGroupItem>
+      )
     }
-    return _.chunk(dates, 7);
+    
   }
 
-  renderCalendar() {
-    let getTrs = (e) => {
-      let dateChunks = this.constructDates();
-      let trs = dateChunks.map((dateChunk, idx) => {
-        let tds = dateChunk.map((d, idx) => (
-          <td key={idx} className="calendar-date">
-            <div className="calendar-date-name">
-              <span className="small text-muted">{d.format('D')}</span>
-            </div>
-            <div className="calendar-date-field">
-            {e.filter((event)=>{
-              return (moment(event.starttime).isSame(d, 'day'))
-            }).sort((a, b) => {
-              return +(a.starttime > b.starttime) || +(a.starttime === b.starttime) -1;
-            }).map((event) => {
-              return (
-                <div key={event.id}>
-                <Link className="card card-link my-1" to={"/events/" + event.id}>
-                <div className="card-header p-0 pl-1 small text-muted">
-                    {moment(event.starttime).format("HH:mm")}
-                  </div>
-                  
-                  <p className="card-text p-1">{event.name}</p>
-                </Link>
-                </div>
-              )
-            })}
-            </div>
-          </td>
-        ))
-        return (
-          <tr key={idx} className="">
-            {tds}
-          </tr>
-        )
-      })
-      return trs
+  renderPast() {
+    let past = this.props.events.filter(event => {
+      return (moment(event.starttime).isBefore(moment(), 'day'))
+    }).sort((a, b) => {
+              return +(a.starttime < b.starttime) || +(a.starttime === b.starttime) -1;
+    })
+    if(past.length>0){
+      return past.map(event => {
+        return this.renderEvent(event)
+    })
+    } else {
+      return (
+        <ListGroupItem>
+          No past events
+        </ListGroupItem>
+      )
     }
-    const dateHeads = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',' Sun']
-          .map(d => (
-            <th key={d} className="calendar-date-header">{d}</th>
-          ))
+  }
+
+  renderEvent(event) {
     return (
-      <div className="row justify-content-md-center">
-        <h5>{moment().format('MMMM')}</h5>
-        <div className="col-12 col-md-auto table-responsive">
-        <table className="table table-bordered">
-          <thead className="thead-inverse table-sm">
-            <tr>
-              {dateHeads}
-            </tr>
-          </thead>
-          <tbody>
-            {getTrs(this.props.events)}
-          </tbody>
-        </table>
+      <Link
+      key={event.id}
+      to={"/events/" + event.id}
+      className="list-group-item flex-column align-items-start">
+      <div 
+      className="d-flex w-100 justify-content-between">
+        <h5 className="mb-1">{event.name}</h5>
+        <small className="text-muted">{moment(event.starttime).fromNow()}</small>
       </div>
-      </div>
+      <small>{moment(event.starttime).format("dddd, MMMM Do YYYY, HH:mm")}</small>
+      </Link>
     )
   }
 
   renderList() {
-    return this.props.events.sort((a, b) => {
-      return +(a.starttime < b.starttime) || +(a.starttime === b.starttime) -1;
-    }).map((event) => {
-      return (
-        <Link
-        key={event.id}
-        to={"/events/" + event.id}
-        className="list-group-item flex-column align-items-start">
-        <div 
-        className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">{event.name}</h5>
-          <small className="text-muted">{moment(event.starttime).fromNow()}</small>
-        </div>
-        <small>{moment(event.starttime).format("dddd, MMMM Do YYYY, HH:mm")}</small>
-        </Link>
-      );
-    });
+    return (
+      <Card>
+        <CardHeader>
+        <Nav tabs className="card-header-tabs">
+          <NavItem>
+            <NavLink
+              className={classnames({ active: this.state.activeTab === '1' })}
+              onClick={() => { this.toggle('1');}}
+            >
+            Upcoming
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: this.state.activeTab === '2' })}
+              onClick={() => { this.toggle('2');}}
+            > 
+            Past
+            </NavLink>
+          </NavItem>
+        </Nav>
+        </CardHeader>
+        <CardBlock>
+        <TabContent activeTab={this.state.activeTab}>
+          <TabPane tabId="1">
+            <Row>
+              <Col sm="12">
+              <ListGroup className="list-group-flush">
+                {this.renderUpcoming()}
+              </ListGroup>
+              </Col>
+            </Row>
+          </TabPane>
+          <TabPane tabId="2">
+            <Row>
+              <Col sm="12">
+              <ListGroup className="list-group-flush">
+                {this.renderPast()}
+                </ListGroup>
+              </Col>
+            </Row>
+          </TabPane>
+        </TabContent>
+        </CardBlock>
+        </Card>
+    )
   }
 
   render() {
     return (
-      <div className="row">
-      <div className="col-lg-9 push-lg-3">
+      <Row>
+      <div className="col-xl-8 push-xl-4">
           {this.renderAlert()}
-          {this.renderCalendar()}
+          <EventCalendar events={this.props.events} />
         </div>
-        <div className="col-lg-3 pull-lg-9">
-          <div className="list-group">
+        <div className="col-xl-4 pull-xl-8">
           {this.renderList()}
-          </div>
         </div>
-      </div>
+      </Row>
     );
   }
 }
